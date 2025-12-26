@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IST Publications | Innovative Science and Technology</title>
+    <title>Guidelines & Ethics | IST Publications</title>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -31,7 +31,7 @@
             overflow-x: hidden;
         }
 
-        h1, h2, h3 { font-family: 'Merriweather', serif; color: var(--primary); }
+        h1, h2, h3, h4 { font-family: 'Merriweather', serif; color: var(--primary); }
         a { text-decoration: none; color: inherit; transition: 0.3s; }
         ul { list-style: none; }
 
@@ -94,31 +94,20 @@
         .menu-toggle { display: none; font-size: 1.8rem; cursor: pointer; color: var(--primary); }
         .menu-close { display: none; }
 
-        /* --- HERO SECTION --- */
+        /* --- HERO SECTION (Guidelines Version) --- */
         .hero {
-            background: linear-gradient(rgba(0, 51, 102, 0.9), rgba(0, 51, 102, 0.7)), url('/frontend/img/a123cdbfd4488fb0a1e27a840142b738.jpg');
+            /* Using a slightly different gradient or same image to keep consistency */
+            background: linear-gradient(rgba(0, 51, 102, 0.95), rgba(0, 51, 102, 0.8)), url('/frontend/img/a123cdbfd4488fb0a1e27a840142b738.jpg');
             background-size: cover;
             background-position: center;
             color: var(--white);
-            padding: 100px 5%;
+            padding: 80px 5%;
             text-align: center;
         }
 
-        .hero h1 { color: var(--white); font-size: 3rem; margin-bottom: 20px; }
-        .hero p { font-size: 1.2rem; max-width: 800px; margin: 0 auto 30px; }
+        .hero h1 { color: var(--white); font-size: 2.5rem; margin-bottom: 15px; }
+        .hero p { font-size: 1.1rem; max-width: 800px; margin: 0 auto; opacity: 0.9; }
         
-        .hero-btns { display: flex; gap: 20px; justify-content: center; }
-        
-        .btn-cta {
-            background-color: var(--accent);
-            color: var(--primary);
-            padding: 15px 30px;
-            font-weight: bold;
-            border-radius: 5px;
-            font-size: 1.1rem;
-        }
-        .btn-cta:hover { background-color: #e6c200; transform: translateY(-2px); }
-
         /* --- MAIN LAYOUT (GRID) --- */
         .main-container {
             max-width: 1400px;
@@ -139,25 +128,32 @@
             border-left: 5px solid var(--secondary);
         }
 
-        .section-card h2 { margin-bottom: 15px; font-size: 1.8rem; }
+        .section-card h2 { margin-bottom: 20px; font-size: 1.8rem; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .section-card p { margin-bottom: 15px; color: var(--text-light); text-align: justify; }
 
-        .badges {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+        /* Guidelines Specific Styles */
+        .sub-item {
+            margin-bottom: 20px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 15px;
         }
-        .badge {
-            background: #eef2f5;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--primary);
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .sub-item:last-child { border-bottom: none; }
+        .sub-item h4 { color: var(--secondary); font-size: 1.1rem; margin-bottom: 8px; }
+        
+        .guideline-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 12px;
+            color: var(--text-light);
+        }
+        .guideline-list li::before {
+            content: '\f00c'; /* Font Awesome check */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--secondary);
         }
 
         /* --- SIDEBAR (NEWS TICKER) --- */
@@ -169,7 +165,7 @@
             border-radius: 8px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
             border-top: 5px solid #d9534f; /* Red for News/Alerts */
-            height: 400px; /* Fixed height for ticker */
+            height: 400px; 
             overflow: hidden;
         }
 
@@ -181,7 +177,7 @@
 
         .news-container {
             height: 300px;
-            overflow: hidden; /* Hide scrollbar */
+            overflow: hidden; 
             position: relative;
         }
 
@@ -191,22 +187,16 @@
             animation: scrollUp 15s linear infinite;
         }
         
-        /* Pause animation on hover */
-        .news-container:hover .news-list {
-            animation-play-state: paused;
-        }
+        .news-container:hover .news-list { animation-play-state: paused; }
 
-        .news-item {
-            padding: 15px 0;
-            border-bottom: 1px dashed #eee;
-        }
+        .news-item { padding: 15px 0; border-bottom: 1px dashed #eee; }
         .news-item h4 { font-size: 1rem; color: var(--primary); margin-bottom: 5px; font-family: 'Roboto', sans-serif; }
         .news-item span { font-size: 0.75rem; color: #999; display: block; margin-bottom: 5px; }
         .news-item p { font-size: 0.85rem; color: #666; margin: 0; line-height: 1.4; }
 
         @keyframes scrollUp {
             0% { top: 100%; }
-            100% { top: -150%; } /* Move way up to clear list */
+            100% { top: -150%; } 
         }
 
         /* --- NEW: LEFT SIDE CONTACT TAB --- */
@@ -223,7 +213,7 @@
             cursor: pointer;
             z-index: 995;
             box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
-            writing-mode: vertical-rl; /* Vertical Text */
+            writing-mode: vertical-rl; 
             text-orientation: mixed;
             font-weight: bold;
             letter-spacing: 1px;
@@ -235,7 +225,7 @@
         .contact-drawer {
             position: fixed;
             top: 0;
-            right: -400px; /* Hidden initially */
+            right: -400px;
             width: 350px;
             height: 100vh;
             background: var(--white);
@@ -260,7 +250,7 @@
         .close-drawer { font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
         .close-drawer:hover { color: var(--primary); }
 
-        /* Contact Form Styles (Reused) */
+        /* Contact Form Styles */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
         .form-group input, .form-group textarea, .form-group select {
@@ -346,13 +336,8 @@
                 grid-template-columns: 1fr;
             }
             
-            /* Hide vertical tab on mobile if it covers text, or keep it smaller */
-            .contact-tab {
-                padding: 10px 5px;
-                font-size: 0.8rem;
-            }
-            
-            .contact-drawer { width: 85%; } /* Slightly smaller on mobile */
+            .contact-tab { padding: 10px 5px; font-size: 0.8rem; }
+            .contact-drawer { width: 85%; }
         }
     </style>
 </head>
@@ -380,15 +365,11 @@
                 <input type="email" id="email" required>
             </div>
             <div class="form-group">
-                <label for="phone">Phone Number</label>
-                <input type="tel" id="phone">
-            </div>
-            <div class="form-group">
                 <label for="subject">Subject</label>
                 <select id="subject">
                     <option>Paper Submission</option>
                     <option>General Inquiry</option>
-                    <option>Buy Journal/Book</option>
+                    <option>Ethics Issue</option>
                 </select>
             </div>
             <div class="form-group">
@@ -406,7 +387,7 @@
 
     <header>
         <div class="nav-container">
-            <a href="#" class="logo">
+            <a href="landing.html" class="logo">
                 <i class="fas fa-book-open"></i> IST <span>Publications</span>
             </a>
             <div class="menu-toggle" id="mobile-menu-btn">
@@ -417,13 +398,13 @@
                 <div class="menu-close" id="menu-close-btn">
                     <i class="fas fa-times"></i>
                 </div>
-                <li><a href="#home">Home</a></li>
+                <li><a href="index.html">Home</a></li>
                 <li><a href="journals.html">Journals</a></li>
                 <li><a href="#achievers">Achievers</a></li>
                 <li><a href="#books">Books</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#notices">Notices</a></li>
-                <li><a href="guidelines.html">Guidelines</a></li>
+                <li><a href="guidelines.html" style="color: var(--secondary); border-bottom: 2px solid var(--accent);">Guidelines</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="#login" class="btn-login">Login</a></li>
             </ul>
@@ -431,38 +412,85 @@
     </header>
 
     <section class="hero" id="home">
-        <h1>Innovative Science and Technology</h1>
-        <p>A peer-reviewed, fully open access, multidisciplinary journal covering engineering, technology, and science.</p>
-        <div class="hero-btns">
-            <a href="journals.html" class="btn-cta">Browse Journals</a>
-            <a href="#submit" class="btn-cta" style="background:transparent; border: 2px solid #fff; color: #fff;">Submit Paper</a>
-        </div>
+        <h1>Publication Guidelines & Ethics</h1>
+        <p>Ensuring the highest standards of integrity, quality, and transparency in scientific publishing.</p>
     </section>
 
     <div class="main-container">
         
         <div class="content-area">
             
-            <div class="section-card" id="intro">
-                <h2><i class="fas fa-university"></i> About the Journal</h2>
+            <div class="section-card" id="ethics">
+                <h2><i class="fas fa-balance-scale"></i> Publication Ethics</h2>
                 <p>
-                    <b>Innovative Science and Technologies</b> is a peer-reviewed, fully open access, multidisciplinary journal covering engineering, technology, and science. It publishes both original research and review articles.
-                </p> 
-            </div>
-
-            <div class="section-card" id="scope">
-                <h2><i class="fas fa-microscope"></i> Scope of ISTP</h2>
+                    Innovative Science and Technology Publications Group (ISTPublications) is committed to peer review integrity and practices the highest standards of ethical publishing across all ISTP journals. We publish original research papers that have not been published nor are under review elsewhere.
+                </p>
                 <p>
-                    The scope of the ISTP is to provide an idea of research, academic related important references with dissemination of research outcomes. This supports high-level learning, teaching and research in the fields of Engineering, Science and Technology.
+                    IST publication ethics encourages integrity in the research and peer review process as outlined below, and we prohibit any malpractices regarding publication. ISTPublications uses a hybrid tool to verify the originality of every submitted manuscript. We promote new research and scientific applications in the field of Computer Science & Engineering and Technology with Allied fields, providing high-quality and flexible information solutions to researchers.
                 </p>
             </div>
 
-            <div class="section-card" id="aim">
-                <h2><i class="fas fa-bullseye"></i> Our Aim</h2>
-                <p>
-                    The aim of the journal to promote the new Innovative ideas in all fields of Engineering and Technology as one platform so that if anybody wants to integrate their ideas with other field of Computer Science.
-                </p>
+            <div class="section-card" id="authors">
+                <h2><i class="fas fa-pen-fancy"></i> Principal Advice to Authors</h2>
+                
+                <div class="sub-item">
+                    <h4>Fabrication/Falsification of Data</h4>
+                    <p>Making up data or results and recording or reporting them is fabrication of data. Falsification of data is manipulating research materials, omitting, deletion, or suppression of conflicting data without justification. This causes mistrust and disgrace to the scientific community.</p>
+                </div>
+
+                <div class="sub-item">
+                    <h4>Plagiarism</h4>
+                    <p>Using another person’s ideas, language, graphs, pictures, results, and experiments without giving credit to them. Without citing the source, copying even a single sentence from your own or another person’s research paper leads to plagiarism.</p>
+                </div>
+
+                <div class="sub-item">
+                    <h4>Unacceptable Author Contribution</h4>
+                    <p>Including authors who have not contributed to the research in the manuscript and excluding authors who have contributed to the research is unacceptable author contribution.</p>
+                </div>
+
+                <div class="sub-item">
+                    <h4>Citation Manipulation</h4>
+                    <p>Citing irrelevant articles that don’t contribute to the content of the manuscript is a kind of scientific misconduct.</p>
+                </div>
+
+                <div class="sub-item">
+                    <h4>Concurrent Submissions</h4>
+                    <p>Submitting the same manuscript to more than one journal at the same time. It is a waste of time for editors and peer reviewers and can also damage the reputation of journals if published in more than one place.</p>
+                </div>
+
+                <div class="sub-item">
+                    <h4>Redundant Publications</h4>
+                    <p>This primarily refers to publishing the same material/experiments more than once. Accountability: All authors whose names appear on the manuscript are equally held accountable for the content of a submitted manuscript or published paper.</p>
+                </div>
             </div>
+
+            <div class="section-card" id="reviewers">
+                <h2><i class="fas fa-user-check"></i> Ethical Guidelines to Reviewers</h2>
+                <p>
+                    IST Publications journals are peer-reviewed by two or three reviewers, and the Editor-in-Chief makes the final decision. It is expected that reviewers during the process should be principled, prompt, act with confidence, contribute to the final decision, acknowledge sources, and stick to the objectives below:
+                </p>
+                <ul class="guideline-list">
+                    <li>Reviewers should understand that the peer review process is confidential. The review process should not be shared with anyone outside the peer review process.</li>
+                    <li>Reviewers clearly understand that the review process should be unbiased and the author deserves full credit for their work.</li>
+                    <li>Reviewers should submit a comprehensive and substantial peer review report in a timely manner. If there is a delay, it should be communicated to the editor.</li>
+                    <li>Reviewers must communicate to the Editor-in-Chief if the papers are plagiarized or published elsewhere.</li>
+                </ul>
+            </div>
+
+            <div class="section-card" id="editors">
+                <h2><i class="fas fa-gavel"></i> Rights of Chief Editorial Board</h2>
+                <p>
+                    The Editor-in-Chief makes the final decision to publish the manuscript in the journal based on peer-reviewer comments. Editors should be principled, prompt, and stick to the following guidelines:
+                </p>
+                <ul class="guideline-list">
+                    <li>Editors should understand that the peer review process is confidential and should not be shared.</li>
+                    <li>Editors clearly understand that the review process should be unbiased and the author deserves full credit for their work.</li>
+                    <li>Editor-in-Chief should discuss all matters regarding publication with the Editorial Board members before making a final decision.</li>
+                    <li>Editors should automatically reject manuscripts that are inappropriate or out of the scope of the journal.</li>
+                    <li>Editors must investigate if they receive information that a manuscript is plagiarized, under consideration elsewhere, or has already been published. If confirmed, the Editor-in-Chief should issue an erratum.</li>
+                </ul>
+            </div>
+
         </div>
 
         <div class="sidebar-wrapper">
@@ -512,15 +540,15 @@
             <div class="footer-col">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Journals</a></li>
+                    <li><a href="landing.html">Home</a></li>
+                    <li><a href="journals.html">Journals</a></li>
                     <li><a href="#">Submit Manuscript</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Policies</h4>
                 <ul>
-                    <li><a href="#">Ethics & Malpractice</a></li>
+                    <li><a href="guidelines.html">Ethics & Malpractice</a></li>
                     <li><a href="#">Peer Review Policy</a></li>
                 </ul>
             </div>
@@ -545,7 +573,6 @@
         // Functions
         function toggleMobileMenu() {
             navLinks.classList.toggle('active');
-            // Only toggle overlay if contact drawer isn't already using it
             if (!contactDrawer.classList.contains('active')) {
                 overlay.classList.toggle('active');
             }
