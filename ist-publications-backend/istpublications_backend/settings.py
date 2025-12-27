@@ -114,11 +114,29 @@ DATABASES = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://*.onrender.com',
-    config('FRONTEND_URL', default='http://localhost:3000'),
+    "https://istpublications.vercel.app", 
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
 # ============ CSRF SETTINGS ============
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
@@ -127,7 +145,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://istpublications-1.onrender.com',
     'https://istpublications.vercel.app'
 ]
-
+CSRF_FAILURE_VIEW = None
 # ============ REST FRAMEWORK SETTINGS ============
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
