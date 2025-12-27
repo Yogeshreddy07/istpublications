@@ -26,7 +26,13 @@ SECRET_KEY = "django-insecure-r6mwx8k5!w30&i3pdf7l@fw4%*9m!1)60@mpt*zow&e8!n(#xf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'istpublications.onrender.com',
+    'istpublications-1.onrender.com',
+    'istpublications.vercel.app'
+]
 
 
 # Application definition
@@ -115,9 +121,9 @@ CORS_ALLOW_CREDENTIALS = True
 
 # ============ CSRF SETTINGS ============
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-    'http://localhost:8000',
-    'https://istpublications.vercel.app',
+    'http://localhost:3000','https://istpublications.onrender.com',
+    'https://istpublications-1.onrender.com',
+    'https://istpublications.vercel.app'
 ]
 
 # ============ REST FRAMEWORK SETTINGS ============
