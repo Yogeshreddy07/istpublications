@@ -530,54 +530,44 @@
         </div>
     </footer>
 
-    <script>
-        // DOM Elements
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const menuCloseBtn = document.getElementById('menu-close-btn');
-        const navLinks = document.getElementById('nav-links');
-        const overlay = document.getElementById('overlay');
-        
-        // Contact Drawer Elements
-        const contactTab = document.getElementById('contact-tab');
-        const contactDrawer = document.getElementById('contact-drawer');
-        const closeDrawerBtn = document.getElementById('close-drawer');
+    <script>// DOM Elements
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const menuCloseBtn = document.getElementById('menu-close-btn');
+const navLinks = document.getElementById('nav-links');
+const overlay = document.getElementById('overlay');
 
-        // Functions
-        function toggleMobileMenu() {
-            navLinks.classList.toggle('active');
-            // Only toggle overlay if contact drawer isn't already using it
-            if (!contactDrawer.classList.contains('active')) {
-                overlay.classList.toggle('active');
-            }
-        }
+// Contact Drawer Elements
+const contactTab = document.getElementById('contact-tab');
+const contactDrawer = document.getElementById('contact-drawer');
+const closeDrawerBtn = document.getElementById('close-drawer');
 
-        function openContactDrawer() {
-            contactDrawer.classList.add('active');
-            overlay.classList.add('active');
-        }
+// Functions
+function toggleMobileMenu() {
+    navLinks.classList.toggle('active');
+    if (!contactDrawer.classList.contains('active')) {
+        overlay.classList.toggle('active');
+    }
+}
 
-        function closeAll() {
-            navLinks.classList.remove('active');
-            contactDrawer.classList.remove('active');
-            overlay.classList.remove('active');
-        }
+function openContactDrawer() {
+    contactDrawer.classList.add('active');
+    overlay.classList.add('active');
+}
 
-        // Event Listeners
-        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-        menuCloseBtn.addEventListener('click', closeAll);
-        
-        contactTab.addEventListener('click', openContactDrawer);
-        closeDrawerBtn.addEventListener('click', closeAll);
-        overlay.addEventListener('click', closeAll);
+function closeAll() {
+    navLinks.classList.remove('active');
+    contactDrawer.classList.remove('active');
+    overlay.classList.remove('active');
+}
 
-        // Form Submit
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Message Sent!');
-            closeAll();
-        });
-        // Contact Form Handler 
-        // ✅ ADD THIS AFTER removing the old one:
+// Event Listeners
+mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+menuCloseBtn.addEventListener('click', closeAll);
+contactTab.addEventListener('click', openContactDrawer);
+closeDrawerBtn.addEventListener('click', closeAll);
+overlay.addEventListener('click', closeAll);
+
+// ✅ CONTACT FORM HANDLER - UPDATED
 document.addEventListener("DOMContentLoaded", function () {
   const contactForm = document.getElementById("contactForm");
   
@@ -594,7 +584,7 @@ document.addEventListener("DOMContentLoaded", function () {
       name: document.getElementById("name").value,
       email: document.getElementById("email").value,
       phone: document.getElementById("phone").value,
-      subject: document.getElementById("subject").value,
+      subject: document.getElementById("subject").value,  // Now sends correct value (paper_submission, general_inquiry, buy_journal)
       message: document.getElementById("message").value,
     };
 
@@ -621,11 +611,11 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("Response data:", result);
 
       if (response.ok) {
-        alert("✅ Thank you! Your message has been sent successfully. We will get back to you soon.");
+        alert("Thank you! Your message has been sent successfully. We will get back to you soon.");
         contactForm.reset();
-        closeAll(); // Close the drawer
+        closeAll();
       } else {
-        let errorMsg = "❌ Please correct the following errors:\n";
+        let errorMsg = "Please correct the following errors:\n";
         if (result.errors) {
           Object.keys(result.errors).forEach((field) => {
             errorMsg += `${field}: ${result.errors[field]}\n`;
@@ -637,13 +627,14 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     } catch (error) {
       console.error("Fetch error:", error);
-      alert("❌ An error occurred: " + error.message);
+      alert("An error occurred: " + error.message);
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalBtnText;
     }
   });
 });
+
 
     </script>
 </body>
