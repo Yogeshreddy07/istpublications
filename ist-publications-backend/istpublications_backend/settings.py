@@ -141,11 +141,9 @@ CORS_ALLOW_HEADERS = [
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'https://*.onrender.com',
-    'https://istpublications.onrender.com',
-    'https://istpublications-1.onrender.com',
+    'https://istpublications.onrender.com', 
     'https://istpublications.vercel.app'
-]
-CSRF_FAILURE_VIEW = None
+] 
 # ============ REST FRAMEWORK SETTINGS ============
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
