@@ -36,6 +36,7 @@ ALLOWED_HOSTS = [
 ]
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -88,10 +89,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "istpublications_backend.wsgi.application"
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-...')
-DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
-
+ 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
