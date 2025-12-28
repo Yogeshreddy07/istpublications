@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit an Article - IST Publications</title>
+    <link href="https://fonts.googleapis.com/css?family=Merriweather:wght@300;400;700&family=Roboto:wght@400;500;700" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary: #003366;
+            --secondary: #00509E;
+            --accent: #FFD700;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --bg-light: #f4f7f6;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        h1, h2, h3 { font-family: 'Merriweather', serif; color: var(--primary); }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+        /* --- NAVIGATION --- */
+        .top-bar {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 10px 5%;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo span { color: var(--secondary); font-weight: 400; font-size: 1.4rem; }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            align-items: center;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--secondary);
+            border-bottom: 2px solid var(--accent);
+        }
+        .btn-login {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 8px 20px;
+            border-radius: 4px;
+        }
+        .btn-login:hover { background-color: var(--secondary); }
+        .menu-toggle { display: none; font-size: 1.8rem; cursor: pointer; color: var(--primary); }
+        .menu-close { display: none; }
+        /* --- CONTACT TAB & DRAWER --- */
+        .contact-tab {
+            position: fixed; left: 0; top: 50%; transform: translateY(-50%);
+            background: var(--primary); color: var(--white);
+            padding: 15px 10px; border-top-right-radius: 8px; border-bottom-right-radius: 8px;
+            cursor: pointer; z-index: 995;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            writing-mode: vertical-rl; text-orientation: mixed;
+            font-weight: bold; letter-spacing: 1px; transition: 0.3s;
+        }
+        .contact-tab:hover { background: var(--secondary); padding-left: 15px; }
+        .contact-drawer {
+            position: fixed; top: 0; right: -400px;
+            width: 350px; height: 100vh;
+            background: var(--white);
+            box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+            z-index: 2000; transition: right 0.4s ease-in-out;
+            padding: 30px; overflow-y: auto;
+        }
+        .contact-drawer.active { right: 0; }
+        .drawer-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px;
+        }
+        .close-drawer { font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
+        .close-drawer:hover { color: var(--primary); }
+        /* Form Styles */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+        }
+        .btn-submit {
+            width: 100%; background-color: var(--primary); color: var(--white);
+            padding: 12px; border: none; border-radius: 4px; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn-submit:hover { background-color: var(--secondary); }
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 998; display: none;
+        }
+        .overlay.active { display: block; }
+        /* --- PAGE HEADER --- */
+        .page-header {
+            background: linear-gradient(rgba(0, 51, 102, 0.9), rgba(0, 51, 102, 0.8));
+            color: var(--white);
+            padding: 60px 5%;
+            text-align: center;
+        }
+        .page-header h1 { color: var(--white); margin-bottom: 10px; }
+        /* --- MAIN LAYOUT --- */
+        .main-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 0 5%;
+        }
+        /* --- STEPS NAVIGATION --- */
+        .steps-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+        .step {
+            flex: 1;
+            min-width: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-light);
+            border: 3px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        .step.active .step-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--white);
+            box-shadow: 0 0 0 4px rgba(0,51,102,0.1);
+        }
+        .step.completed .step-circle {
+            background: #28a745;
+            border-color: #28a745;
+            color: var(--white);
+        }
+        .step-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            color: var(--text-light);
+        }
+        .step.active .step-label { color: var(--primary); }
+        .step-line {
+            position: absolute;
+            top: 25px;
+            left: -100%;
+            right: -100%;
+            height: 3px;
+            background: #ddd;
+            z-index: 1;
+        }
+        .step:first-child .step-line { display: none; }
+        .step.completed .step-line { background: #28a745; display: block; }
+        .step:last-child .step-line { display: none; }
+        /* --- FORM CARD --- */
+        .form-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+        .form-card.active { display: block; }
+        .form-card h2 {
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 15px;
+        }
+        /* --- FILE UPLOAD --- */
+        .file-upload-area {
+            border: 2px dashed var(--secondary);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            background: rgba(0,51,102,0.05);
+            cursor: pointer;
+            transition: 0.3s;
+            margin: 20px 0;
+        }
+        .file-upload-area:hover {
+            background: rgba(0,51,102,0.1);
+            border-color: var(--primary);
+        }
+        .file-upload-area i {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            display: block;
+            margin-bottom: 10px;
+        }
+        .file-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .file-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .file-item-name {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+        .file-item-remove {
+            color: #dc3545;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        /* --- CHECKBOXES --- */
+        .checkbox-group {
+            margin: 20px 0;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+            margin-top: 3px;
+            cursor: pointer;
+            width: auto;
+        }
+        .checkbox-item label {
+            flex: 1;
+            cursor: pointer;
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        /* --- BUTTONS --- */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: flex-end;
+        }
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+        .btn-primary:hover { background-color: var(--secondary); }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: var(--white);
+        }
+        .btn-secondary:hover { background-color: #5a6268; }
+        /* --- FOOTER --- */
+        footer {
+            background: var(--primary);
+            color: var(--white);
+            padding: 50px 5%;
+            margin-top: 50px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .footer-col h4 { color: var(--accent); margin-bottom: 20px; font-family: 'Roboto', sans-serif; }
+        .footer-col ul li { margin-bottom: 10px; }
+        .footer-col ul li a:hover { color: var(--accent); }
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.8rem;
+        }
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1200px) {
+            .steps-container { gap: 8px; }
+            .step-label { font-size: 0.8rem; }
+        }
+        @media (max-width: 992px) {
+            .top-bar { flex-direction: row; gap: 15px; font-size: 0.75rem; justify-content: space-between; align-items: center; padding: 10px 5%; }
+            .nav-links {
+                position: fixed; top: 0; left: -100%;
+                width: 280px; height: 100vh;
+                background: var(--white);
+                flex-direction: column; padding: 60px 20px;
+                box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+                transition: left 0.3s ease-in-out;
+                z-index: 999; align-items: flex-start;
+            }
+            .nav-links.active { left: 0; }
+            .nav-links li { width: 100%; border-bottom: 1px solid #eee; padding: 10px 0; }
+            .menu-toggle { display: block; }
+            .menu-close { display: block; position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; }
+            .main-container { margin: 30px auto; padding: 0 3%; }
+            .form-card { padding: 20px; }
+            .form-card h2 { font-size: 1.5rem; margin-bottom: 20px; }
+            .button-group { flex-direction: column-reverse; gap: 10px; }
+            .btn { width: 100%; padding: 10px 20px; font-size: 0.9rem; }
+            .contact-drawer { width: 85%; right: -100% !important; }
+            .contact-drawer.active { right: 0 !important; }
+            .steps-container { gap: 5px; margin-bottom: 30px; }
+            .step { min-width: 80px; }
+            .step-circle { width: 45px; height: 45px; font-size: 0.85rem; }
+            .step-label { font-size: 0.65rem; margin-top: 5px; }
+            .step-line { top: 22px; }
+            .file-upload-area { padding: 20px; }
+            .file-upload-area i { font-size: 2rem; }
+            .checkbox-item { padding: 10px; margin-bottom: 10px; }
+            .checkbox-item label { font-size: 0.85rem; }
+            .form-group { margin-bottom: 12px; }
+            .form-group input, .form-group textarea, .form-group select { padding: 8px; font-size: 0.9rem; }
+        }
+        @media (max-width: 768px) {
+            .top-bar { padding: 8px 3%; font-size: 0.7rem; flex-direction: row; justify-content: space-between; gap: 10px; }
+            .nav-container { padding: 12px 3%; }
+            .logo { font-size: 1.6rem; gap: 8px; }
+            .logo span { font-size: 1.1rem; }
+            .main-container { margin: 20px auto; padding: 0 2%; }
+            .page-header { padding: 40px 3%; }
+            .page-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+            .page-header p { font-size: 0.9rem; }
+            .form-card { padding: 15px; border-radius: 6px; }
+            .form-card h2 { font-size: 1.3rem; margin-bottom: 15px; padding-bottom: 10px; }
+            .steps-container { gap: 3px; margin-bottom: 25px; }
+            .step { min-width: 70px; }
+            .step-circle { width: 40px; height: 40px; border: 2px solid #ddd; font-size: 0.8rem; margin-bottom: 5px; }
+            .step.active .step-circle { box-shadow: 0 0 0 3px rgba(0,51,102,0.1); }
+            .step-label { font-size: 0.6rem; }
+            .step-line { top: 20px; }
+            .form-group { margin-bottom: 10px; }
+            .form-group label { font-size: 0.85rem; margin-bottom: 4px; }
+            .form-group input, .form-group textarea, .form-group select { padding: 8px; font-size: 0.85rem; }
+            textarea { min-height: 80px !important; }
+            .file-upload-area { padding: 15px; margin: 15px 0; }
+            .file-upload-area i { font-size: 1.8rem; margin-bottom: 8px; }
+            .file-upload-area p { font-size: 0.8rem; }
+            .file-item { padding: 8px; margin-bottom: 6px; font-size: 0.8rem; }
+            .checkbox-item { padding: 8px; margin-bottom: 8px; }
+            .checkbox-item input[type="checkbox"] { margin-right: 8px; }
+            .checkbox-item label { font-size: 0.8rem; }
+            .button-group { gap: 8px; margin-top: 20px; }
+            .btn { padding: 10px 20px; font-size: 0.85rem; }
+            .contact-tab { padding: 12px 8px; font-size: 0.7rem; }
+            footer { padding: 30px 3%; }
+            .footer-grid { gap: 20px; }
+            .footer-col h4 { font-size: 0.95rem; margin-bottom: 10px; }
+            .footer-col ul li { font-size: 0.85rem; }
+            .copyright { font-size: 0.7rem; margin-top: 20px; padding-top: 15px; }
+        }
+        @media (max-width: 480px) {
+            .top-bar { padding: 8px 2%; flex-direction: row; gap: 8px; justify-content: space-between; align-items: center; }
+            .top-bar span { font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .nav-container { padding: 10px 2%; flex-direction: row; gap: 15px; justify-content: space-between; align-items: center; }
+            .logo { font-size: 1.4rem; gap: 6px; }
+            .logo span { font-size: 1rem; }
+            .menu-toggle { font-size: 1.5rem; }
+            .main-container { margin: 0 auto; padding: 0 3%; width: 100%; max-width: 100%; }
+            .page-header { padding: 30px 3%; margin: 0; }
+            .page-header h1 { font-size: 1.5rem; margin-bottom: 5px; }
+            .page-header p { font-size: 0.8rem; }
+            .steps-container { gap: 2px; margin-bottom: 20px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; }
+            .step { min-width: 60px; }
+            .step-circle { width: 38px; height: 38px; font-size: 0.75rem; border: 2px solid #ddd; }
+            .step-label { font-size: 0.55rem; }
+            .step-line { top: 19px; }
+            .form-card { padding: 12px; margin-bottom: 15px; }
+            .form-card h2 { font-size: 1.2rem; margin-bottom: 12px; padding-bottom: 8px; }
+            .form-group { margin-bottom: 8px; }
+            .form-group label { font-size: 0.8rem; margin-bottom: 3px; }
+            .form-group input, .form-group textarea, .form-group select { padding: 6px; font-size: 0.8rem; border-radius: 3px; }
+            textarea { min-height: 70px !important; }
+            .file-upload-area { padding: 12px; margin: 12px 0; border-radius: 6px; }
+            .file-upload-area i { font-size: 1.5rem; margin-bottom: 6px; }
+            .file-upload-area p { font-size: 0.75rem; }
+            .file-item { padding: 6px; margin-bottom: 5px; font-size: 0.75rem; }
+            .checkbox-item { padding: 6px; margin-bottom: 6px; }
+            .checkbox-item input[type="checkbox"] { margin-right: 6px; margin-top: 2px; }
+            .checkbox-item label { font-size: 0.75rem; }
+            .button-group { gap: 6px; margin-top: 15px; }
+            .btn { padding: 8px 16px; font-size: 0.8rem; }
+            .btn i { font-size: 0.75rem; }
+            .contact-tab { padding: 10px 6px; font-size: 0.6rem; letter-spacing: 0.5px; }
+            footer { padding: 20px 2%; }
+            .footer-grid { grid-template-columns: 1fr; gap: 15px; }
+            .footer-col h4 { font-size: 0.9rem; margin-bottom: 8px; }
+            .footer-col ul li { font-size: 0.8rem; }
+            .copyright { font-size: 0.65rem; margin-top: 15px; padding-top: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    <div class="contact-tab" id="contact-tab">
+        <i class="fas fa-envelope"></i> &nbsp; QUICK CONTACT
+    </div>
+    <div class="contact-drawer" id="contact-drawer">
+        <div class="drawer-header">
+            <h3>Get in Touch</h3>
+            <div class="close-drawer" id="close-drawer"><i class="fas fa-times"></i></div>
+        </div>
+        <p style="margin-bottom: 20px; font-size: 0.9rem; color: #666;">We typically reply within 24 hours.</p>
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email ID</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone">
+            </div>
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <select id="subject" required>
+                    <option value="">-- Select Subject --</option>
+                    <option value="paper_submission">Paper Submission</option>
+                    <option value="general_inquiry">General Inquiry</option>
+                    <option value="buy_journal">Buy Journal or Book</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" rows="4"></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Send Message</button>
+        </form>
+    </div>
+    <div class="top-bar">
+        <span><i class="fas fa-check-circle"></i> Fully Open Access</span>
+        <span><i class="fas fa-envelope"></i> info@istpublications.com</span>
+    </div>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-book-open"></i> IST <span>Publications</span>
+            </a>
+            <div class="menu-toggle" id="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links" id="nav-links">
+                <div class="menu-close" id="menu-close-btn">
+                    <i class="fas fa-times"></i>
+                </div>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="journals.html">Journals</a></li>
+                <li><a href="#achievers">Achievers</a></li>
+                <li><a href="#books">Books</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#notices">Notices</a></li>
+                <li><a href="guidelines.html">Guidelines</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#login" class="btn-login">Login</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <h1>Submit an Article</h1>
+        <p>Publish your research with IST Publications</p>
+    </section>
+
+    <div class="main-container">
+        <!-- STEPS NAVIGATION -->
+        <div class="steps-container">
+            <div class="step active" id="step-1-indicator">
+                <div class="step-line"></div>
+                <div class="step-circle">1</div>
+                <div class="step-label">Start</div>
+            </div>
+            <div class="step" id="step-2-indicator">
+                <div class="step-line"></div>
+                <div class="step-circle">2</div>
+                <div class="step-label">Upload Submission</div>
+            </div>
+            <div class="step" id="step-3-indicator">
+                <div class="step-line"></div>
+                <div class="step-circle">3</div>
+                <div class="step-label">Enter Metadata</div>
+            </div>
+            <div class="step" id="step-4-indicator">
+                <div class="step-line"></div>
+                <div class="step-circle">4</div>
+                <div class="step-label">Confirmation</div>
+            </div>
+            <div class="step" id="step-5-indicator">
+                <div class="step-line"></div>
+                <div class="step-circle">5</div>
+                <div class="step-label">Next Steps</div>
+            </div>
+        </div>
+
+        <!-- STEP 1: START -->
+        <div class="form-card active" id="form-1">
+            <h2><i class="fas fa-play-circle"></i> Step 1: Start</h2>
+            
+            <div class="form-group">
+                <label><strong>Section Policy</strong></label>
+                <p style="margin-top: 10px; color: var(--text-light);">Original Research Articles present novel, unpublished research findings that make a clear and substantive contribution to knowledge in engineering, technology, computing, basic sciences, architecture, or management-related disciplines within the scope of the journal. Submissions should demonstrate originality, methodological rigor, appropriate analysis, and meaningful interpretation of results.</p>
+                <p style="margin-top: 10px; color: var(--text-light);">Original Research Articles should be based on systematic investigation, experimental or theoretical analysis, computational modelling, empirical study, or applied research. Incremental work, routine applications of established methods, or studies lacking sufficient validation may not be considered.</p>
+            </div>
+
+            <div class="form-group">
+                <label><strong>Structure of the Manuscript</strong></label>
+                <p style="margin-top: 10px; color: var(--text-light);">An Original Research Article should normally be organised using the following core sections, as appropriate to the nature of the study:</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Title</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Abstract and keywords (prepared in accordance with the Author Guidelines)</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Introduction</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Materials and Methods / Methodology</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Results</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Discussion</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Conclusions</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Acknowledgements (if applicable)</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Declarations (conflict of interest, funding, ethics, as applicable)</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">References</li>
+                </ul>
+                <p style="margin-top: 15px; color: var(--text-light);">Detailed requirements for abstract preparation, keywords, ethical declarations, and reference formatting are provided in the Author Guidelines and should be followed strictly.</p>
+            </div>
+
+            <div class="form-group">
+                <label><strong>Length and Presentation</strong></label>
+                <p style="margin-top: 10px; color: var(--text-light);">The typical length of an Original Research Article is 6,000–8,000 words, excluding references. Authors should ensure clarity, logical flow, and consistency in presentation. Figures and tables should be of high quality and directly relevant to the research findings.</p>
+            </div>
+
+            <div class="form-group">
+                <label><strong>Evaluation Criteria</strong></label>
+                <p style="margin-top: 10px; color: var(--text-light);">Original Research Articles are evaluated based on the following criteria:</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Originality and novelty of the contribution</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Relevance to the journal's scope</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Methodological soundness and technical rigor</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Quality and clarity of analysis and interpretation</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Significance and impact of the results</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Overall presentation and scholarly clarity</li>
+                </ul>
+                <p style="margin-top: 15px; color: var(--text-light);">Manuscripts that do not meet these criteria may be declined during initial editorial screening.</p>
+            </div>
+
+            <div class="form-group">
+                <label><strong>Categories</strong></label>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Artificial Intelligence and Machine Learning (AI/ML)</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Architecture and Architectural Design</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Basic Sciences &amp; Mathematics</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Biomedical Sciences and Bioengineering</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Business Sciences</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Computer Science</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Data Sciences</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Economics</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Engineering and Technology</li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 8px;">Management</li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label><strong>Submission Requirements</strong></label>
+                <p style="margin-top: 10px; color: var(--text-light); font-weight: bold;">You must read and acknowledge that you've completed the requirements below before proceeding.</p>
+                <div class="checkbox-group" style="margin-top: 15px;">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="req1">
+                        <label for="req1">The manuscript represents original work that has not been published previously and is not under consideration elsewhere, and it falls within the aims and scope of IST Publications</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="req2">
+                        <label for="req2">The appropriate article type has been selected, and the manuscript is structured in accordance with the Author Guidelines for that article type.</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="req3">
+                        <label for="req3">The manuscript includes an unstructured abstract of 250–300 words and 4–6 relevant keywords.</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="req4">
+                        <label for="req4">All required declarations have been included, where applicable, including conflict of interest, funding disclosure, ethics approval and consent, data availability, and AI usage statements.</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="req5">
+                        <label for="req5">The abstract is unstructured and typically ranges from 250 to 300 words.</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="req6">
+                        <label for="req6">The manuscript is written in clear and concise English, prepared in an acceptable file format (Microsoft Word or Rich Text), and follows the journal's formatting and reference style (IEEE).</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="req7">
+                        <label for="req7">All listed authors have made significant contributions, approved the final version of the manuscript, and agree to its submission to the journal.</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="req8">
+                        <label for="req8">The manuscript is prepared in an acceptable file format (Microsoft Word, Rich Text Format, or LaTeX).</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="step1-comments"><strong>Comments for the Editor</strong></label>
+                <textarea id="step1-comments" rows="4" placeholder="Add any comments for the editor..." style="margin-top: 10px;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label><strong>Corresponding Contact *</strong></label>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="corresponding">
+                    <label for="corresponding">Yes, I would like to be contacted about this submission.</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><strong>Acknowledge the copyright statement</strong></label>
+                <p style="margin-top: 10px; color: var(--text-light); font-weight: bold;">Copyright and Licensing</p>
+                <p style="margin-top: 10px; color: var(--text-light);">By submitting an article to the <em>Journal of Computers, Mechanical and Management (J. Comput. Mech. Manag.)</em>, authors understand and agree to the following terms and conditions governing the publication and use of their work.</p>
+                <p style="margin-top: 10px; color: var(--text-light);">Upon acceptance of a manuscript for publication in the <em>Journal of Computers, Mechanical and Management (J. Comput. Mech. Manag.)</em>, <strong>the copyright of the published article is transferred to the journal</strong>. The <em>Journal of Computers, Mechanical and Management (J. Comput. Mech. Manag.)</em> and its publisher, <strong>AAN Publishing, Malaysia</strong>, thereby become the <strong>copyright holder</strong> of the work.</p>
+                <p style="margin-top: 10px; color: var(--text-light);">All articles published in IST Publications are made available under the <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.en" target="_blank" style="color: var(--secondary); font-weight: bold;">Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0) License</a>. This licence permits others to copy, distribute, adapt, and build upon the published work <strong>for non-commercial academic and research purposes</strong>, provided that appropriate credit is given to the journal and the original publication.</p>
+                <p style="margin-top: 10px; color: var(--text-light);">Commercial use of any content published in IST Publications is <strong>not permitted</strong> without prior written permission from the journal.</p>
+                <p style="margin-top: 15px; color: var(--text-light); font-weight: bold;">Author Responsibilities</p>
+                <p style="margin-top: 10px; color: var(--text-light);">Authors are responsible for ensuring that all submitted content is original and that any third-party copyrighted material included in the manuscript has been used with appropriate permission and proper attribution.</p>
+                <p style="margin-top: 10px; color: var(--text-light);">Submission of a manuscript to IST Publications signifies the authors' agreement to comply with the journal's publication ethics, research integrity policies, and editorial standards.</p>
+                <p style="margin-top: 10px; color: var(--text-light);">The journal appreciates your interest in publishing with the <em>Journal of Computers, Mechanical and Management</em> and looks forward to disseminating high-quality scholarly work within an ethical and open-access publishing framework.</p>
+                <div class="checkbox-group" style="margin-top: 15px;">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="copyright">
+                        <label for="copyright">Yes, I agree to abide by the terms of the copyright statement.</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="privacy">
+                        <label for="privacy">Yes, I agree to have my data collected and stored according to the <a href="https://jcmm.co.in/index.php/jcmm/about/privacy" target="_blank" style="color: var(--secondary); font-weight: bold;">privacy statement</a>.</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="nextStep()">Next <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- STEP 2: UPLOAD SUBMISSION -->
+        <div class="form-card" id="form-2">
+            <h2><i class="fas fa-upload"></i> Step 2: Upload Submission</h2>
+            
+            <div class="form-group">
+                <label><strong>Files</strong></label>
+                <p style="margin-top: 5px; font-size: 0.9rem; color: var(--text-light);">Upload any files the editorial team will need to evaluate your submission. <a href="#" style="color: var(--secondary); font-weight: bold;">Upload File</a></p>
+            </div>
+
+            <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p><strong>Drop files here or click to browse</strong></p>
+                <p style="font-size: 0.85rem; color: var(--text-light);">Supported formats: PDF, DOC, DOCX, RTF</p>
+            </div>
+            <input type="file" id="fileInput" style="display: none;" multiple onchange="handleFileUpload()">
+
+            <div class="file-list" id="fileList"></div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="prevStep()"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="btn btn-primary" onclick="nextStep()">Next <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- STEP 3: ENTER METADATA -->
+        <div class="form-card" id="form-3">
+            <h2><i class="fas fa-info-circle"></i> Step 3: Enter Metadata</h2>
+            
+            <div class="form-group">
+                <label for="title">Article Title <span style="color: red;">*</span></label>
+                <input type="text" id="title" placeholder="Enter article title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="abstract">Abstract <span style="color: red;">*</span></label>
+                <textarea id="abstract" rows="6" placeholder="Enter abstract (250-300 words)" required></textarea>
+                <small style="color: var(--text-light);">250-300 words recommended</small>
+            </div>
+
+            <div class="form-group">
+                <label for="keywords">Keywords <span style="color: red;">*</span></label>
+                <input type="text" id="keywords" placeholder="Enter keywords (comma separated)" required>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category <span style="color: red;">*</span></label>
+                <select id="category" required>
+                    <option value="">-- Select Category --</option>
+                    <option value="ai">Artificial Intelligence and Machine Learning</option>
+                    <option value="architecture">Architecture and Architectural Design</option>
+                    <option value="basic">Basic Sciences & Mathematics</option>
+                    <option value="biomedical">Biomedical Sciences and Bioengineering</option>
+                    <option value="business">Business Sciences</option>
+                    <option value="cs">Computer Science</option>
+                    <option value="data">Data Sciences</option>
+                    <option value="economics">Economics</option>
+                    <option value="engineering">Engineering and Technology</option>
+                    <option value="management">Management</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="prevStep()"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="btn btn-primary" onclick="nextStep()">Next <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- STEP 4: CONFIRMATION -->
+        <div class="form-card" id="form-4">
+            <h2><i class="fas fa-check-circle"></i> Step 4: Confirmation</h2>
+            
+            <p style="margin-bottom: 20px; font-size: 0.95rem; color: var(--text-light);">Your submission has been uploaded and is ready to be sent. You may go back to review and adjust any of the information you have entered before continuing. When you are ready, click "Finish Submission".</p>
+
+            <div style="background: #f8f9fa; border-left: 4px solid var(--secondary); padding: 20px; border-radius: 4px; margin-bottom: 30px;">
+                <p style="color: var(--text-dark); margin: 0;"><strong>* Denotes required field</strong></p>
+            </div>
+
+            <div class="form-group">
+                <label><strong>Acknowledge the copyright statement</strong></label>
+                <p style="margin-top: 10px; color: var(--text-light);">By submitting an article to the <em>Journal of Computers, Mechanical and Management (J. Comput. Mech. Manag.)</em>, authors understand and agree to the following terms and conditions governing the publication and use of their work.</p>
+                
+                <div class="checkbox-group" style="margin-top: 15px;">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="check1" required>
+                        <label for="check1">Yes, I agree to abide by the terms of the copyright statement.</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="check2" required>
+                        <label for="check2">Yes, I agree to have my data collected and stored according to the <a href="https://jcmm.co.in/index.php/jcmm/about/privacy" target="_blank" style="color: var(--secondary); font-weight: bold;">privacy statement</a>.</label>
+                    </div>
+                </div>
+            </div>
+
+            <p style="margin-top: 30px; margin-bottom: 20px; font-size: 0.85rem; color: var(--text-light);">* Denotes required field</p>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="prevStep()"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="btn btn-primary" onclick="nextStep()">Finish Submission <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- STEP 5: NEXT STEPS -->
+        <div class="form-card" id="form-5">
+            <h2><i class="fas fa-flag-checkered"></i> Step 5: Submission Complete</h2>
+            
+            <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
+                <i class="fas fa-check-circle" style="font-size: 3rem; color: #28a745; margin-bottom: 15px; display: block;"></i>
+                <h3 style="color: #28a745; margin-bottom: 10px;">Thank you for your interest!</h3>
+                <p style="color: var(--text-light); margin-bottom: 0;">Your submission has been received and the journal has been notified. You'll receive a confirmation email shortly.</p>
+            </div>
+
+            <div style="background: var(--bg-light); border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <h3 style="margin-bottom: 15px; font-size: 1.2rem;">What Happens Next?</h3>
+                <p style="color: var(--text-light); margin-bottom: 15px;">The journal has been notified of your submission, and you've been emailed a confirmation for your records. Once the editor has reviewed the submission, they will contact you with the review status.</p>
+                
+                <p style="color: var(--text-light); font-weight: bold; margin-bottom: 15px;">For now, you can:</p>
+                <ul style="margin-left: 20px;">
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 10px;"><a href="#" style="color: var(--secondary); font-weight: bold;">Review this submission</a></li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 10px;"><a href="#" style="color: var(--secondary); font-weight: bold;">Create a new submission</a></li>
+                    <li style="list-style: disc; color: var(--text-light); margin-bottom: 10px;"><a href="index.html" style="color: var(--secondary); font-weight: bold;">Return to your dashboard</a></li>
+                </ul>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="window.location.href='index.html'">Return to Dashboard</button>
+                <button class="btn btn-primary" onclick="newSubmission()">Create New Submission</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>IST Publications</h4>
+                <p>Innovative Science and Technology Publications.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="journals.html">Journals</a></li>
+                    <li><a href="submit.html">Submit Manuscript</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Policies</h4>
+                <ul>
+                    <li><a href="#">Ethics & Malpractice</a></li>
+                    <li><a href="#">Peer Review Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2025 IST Publications. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 5;
+        const uploadedFiles = [];
+
+        function updateStepIndicators() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const indicator = document.getElementById(`step-${i}-indicator`);
+                const form = document.getElementById(`form-${i}`);
+                
+                indicator.classList.remove('active', 'completed');
+                form.classList.remove('active');
+
+                if (i < currentStep) {
+                    indicator.classList.add('completed');
+                } else if (i === currentStep) {
+                    indicator.classList.add('active');
+                    form.classList.add('active');
+                }
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateStepIndicators();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepIndicators();
+            }
+        }
+
+        function newSubmission() {
+            currentStep = 1;
+            document.querySelectorAll('input[type="text"], textarea, select').forEach(el => el.value = '');
+            document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+            uploadedFiles.length = 0;
+            document.getElementById('fileList').innerHTML = '';
+            updateStepIndicators();
+        }
+
+        function handleFileUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const fileList = document.getElementById('fileList');
+            
+            Array.from(fileInput.files).forEach((file, index) => {
+                uploadedFiles.push(file.name);
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span class="file-item-name"><i class="fas fa-file"></i> ${file.name}</span>
+                    <span class="file-item-remove" onclick="removeFile(${uploadedFiles.length - 1})">Remove</span>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            document.getElementById('fileList').innerHTML = '';
+            uploadedFiles.forEach((filename, idx) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span class="file-item-name"><i class="fas fa-file"></i> ${filename}</span>
+                    <span class="file-item-remove" onclick="removeFile(${idx})">Remove</span>
+                `;
+                document.getElementById('fileList').appendChild(fileItem);
+            });
+        }
+
+        // Contact Drawer
+        const overlay = document.getElementById('overlay');
+        const contactTab = document.getElementById('contact-tab');
+        const contactDrawer = document.getElementById('contact-drawer');
+        const closeDrawerBtn = document.getElementById('close-drawer');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const menuCloseBtn = document.getElementById('menu-close-btn');
+        const navLinks = document.getElementById('nav-links');
+
+        function toggleMobileMenu() {
+            navLinks.classList.toggle('active');
+            if (!contactDrawer.classList.contains('active')) {
+                overlay.classList.toggle('active');
+            }
+        }
+
+        function openContactDrawer() {
+            contactDrawer.classList.add('active');
+            overlay.classList.add('active');
+        }
+
+        function closeAll() {
+            navLinks.classList.remove('active');
+            contactDrawer.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        menuCloseBtn.addEventListener('click', closeAll);
+        contactTab.addEventListener('click', openContactDrawer);
+        closeDrawerBtn.addEventListener('click', closeAll);
+        overlay.addEventListener('click', closeAll);
+
+        // Contact Form Handler
+        document.addEventListener("DOMContentLoaded", function () {
+            const contactForm = document.getElementById("contactForm");
+            if (contactForm) {
+                contactForm.addEventListener("submit", async function (e) {
+                    e.preventDefault();
+                    const formData = {
+                        name: document.getElementById("name").value,
+                        email: document.getElementById("email").value,
+                        phone: document.getElementById("phone").value,
+                        subject: document.getElementById("subject").value,
+                        message: document.getElementById("message").value,
+                    };
+                    const submitBtn = contactForm.querySelector('button[type="submit"]');
+                    const originalBtnText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = "Sending...";
+                    try {
+                        alert("Thank you! Your message has been sent successfully. We will get back to you soon.");
+                        contactForm.reset();
+                        closeAll();
+                    } catch (error) {
+                        alert("An error occurred: " + error.message);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalBtnText;
+                    }
+                });
+            }
+        });
+
+        updateStepIndicators();
+    </script>
+</body>
+</html>
