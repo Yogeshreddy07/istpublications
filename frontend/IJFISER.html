@@ -554,6 +554,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+// Wake up Render backend when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('https://istpublications.onrender.com/api/health', {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+    }).catch(err => {
+        console.log('Backend waking up...', err.message);
+    });
+}); 
     </script>
 </body>
 </html>
