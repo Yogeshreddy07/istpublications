@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-r6mwx8k5!w30&i3pdf7l@fw4%*9m!1)60@mpt*zow&e8!n(#xf"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -57,8 +57,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # ADD THIS (before CommonMiddleware)
+    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ADD THIS (before CommonMiddleware)
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -113,8 +113,12 @@ DATABASES = {
 # Allow Vercel frontend to communicate with this backend
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://*.onrender.com',
+    "http://127.0.0.1:5501",
+    "http://localhost:5501", 
     "https://istpublications.vercel.app", 
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.onrender\.com$",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -139,11 +143,13 @@ CORS_ALLOW_HEADERS = [
 ]
 # ============ CSRF SETTINGS ============
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-    'https://*.onrender.com',
-    'https://istpublications.onrender.com', 
-    'https://istpublications.vercel.app'
-] 
+    "http://localhost:3000",
+    "http://127.0.0.1:5501",
+    "http://localhost:5501",
+    "https://istpublications.onrender.com",
+    "https://istpublications.vercel.app",
+]
+
 # ============ REST FRAMEWORK SETTINGS ============
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
