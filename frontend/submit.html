@@ -741,46 +741,81 @@
             </div>
         </div>
         <div class="form-card" id="form-2">
-            <h2><i class="fas fa-info-circle"></i> Step 2: Enter Metadata</h2>
-            
-            <div class="form-group">
-                <label for="title">Article Title <span style="color: red;">*</span></label>
-                <input type="text" id="title" placeholder="Enter article title" required>
-            </div>
+    <h2><i class="fas fa-info-circle"></i> Step 2: Enter Metadata</h2>
 
-            <div class="form-group">
-                <label for="abstract">Abstract <span style="color: red;">*</span></label>
-                <textarea id="abstract" rows="6" placeholder="Enter abstract (150-200 words)" required></textarea>
-                <small style="color: var(--text-light);">150-200 words recommended</small>
-            </div>
+    <h3 style="font-family: 'Merriweather', serif; color: var(--secondary); margin-bottom: 15px; font-size: 1.2rem; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+        Author Details
+    </h3>
 
-            <div class="form-group">
-                <label for="keywords">Keywords <span style="color: red;">*</span></label>
-                <input type="text" id="keywords" placeholder="Enter keywords (comma separated)" required>
-            </div>
-
-            <div class="form-group">
-                <label for="category">Category <span style="color: red;">*</span></label>
-                <select id="category" required>
-                    <option value="">-- Select Category --</option>
-                    <option value="ai">Artificial Intelligence and Machine Learning (AI/ML)</option>
-                    <option value="architecture">Architecture and Architectural Design</option>
-                    <option value="basic">Basic Sciences & Mathematics</option>
-                    <option value="biomedical">Biomedical Sciences and Bioengineering</option>
-                    <option value="business">Business Sciences</option>
-                    <option value="cs">Computer Science</option>
-                    <option value="data">Data Sciences</option>
-                    <option value="economics">Economics</option>
-                    <option value="engineering">Engineering and Technology</option>
-                    <option value="management">Management</option>
-                </select>
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-secondary" onclick="prevStep()"><i class="fas fa-arrow-left"></i> Back</button>
-                <button class="btn btn-primary" onclick="nextStep()">Next <i class="fas fa-arrow-right"></i></button>
-            </div>
+    <div style="background: var(--bg-light); padding: 20px; border-radius: 4px; margin-bottom: 20px;">
+        <h4 style="margin-bottom: 15px; color: var(--primary); font-size: 1rem;">Main Author (Corresponding)</h4>
+        
+        <div class="form-group">
+            <label for="main-name">Full Name <span style="color: red;">*</span></label>
+            <input type="text" id="main-name" placeholder="e.g. Dr. John Doe" required>
         </div>
+        
+        <div class="form-group">
+            <label for="main-email">Email ID <span style="color: red;">*</span></label>
+            <input type="email" id="main-email" placeholder="e.g. john.doe@example.com" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="main-affiliation">Affiliation <span style="color: red;">*</span></label>
+            <input type="text" id="main-affiliation" placeholder="e.g. Department of Science, XYZ University" required>
+        </div>
+    </div>
+
+    <div id="co-authors-container"></div>
+
+    <div class="form-group" style="text-align: right; margin-bottom: 30px;">
+        <button type="button" id="btn-add-author" class="btn" style="background: transparent; border: 2px dashed var(--secondary); color: var(--secondary); width: 100%;" onclick="addCoAuthor()">
+            <i class="fas fa-plus-circle"></i> Add Co-Author (Max 4)
+        </button>
+    </div>
+
+    <h3 style="font-family: 'Merriweather', serif; color: var(--secondary); margin-bottom: 15px; font-size: 1.2rem; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+        Article Metadata
+    </h3>
+
+    <div class="form-group">
+        <label for="title">Article Title <span style="color: red;">*</span></label>
+        <input type="text" id="title" placeholder="Enter article title" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="abstract">Abstract <span style="color: red;">*</span></label>
+        <textarea id="abstract" rows="6" placeholder="Enter abstract (150-200 words)" required></textarea>
+        <small style="color: var(--text-light);">150-200 words recommended</small>
+    </div>
+    
+    <div class="form-group">
+        <label for="keywords">Keywords <span style="color: red;">*</span></label>
+        <input type="text" id="keywords" placeholder="Enter keywords (comma separated)" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="category">Category <span style="color: red;">*</span></label>
+        <select id="category" required>
+            <option value="">-- Select Category --</option>
+            <option value="ai">Artificial Intelligence and Machine Learning (AI/ML)</option>
+            <option value="architecture">Architecture and Architectural Design</option>
+            <option value="basic">Basic Sciences & Mathematics</option>
+            <option value="biomedical">Biomedical Sciences and Bioengineering</option>
+            <option value="business">Business Sciences</option>
+            <option value="cs">Computer Science</option>
+            <option value="data">Data Sciences</option>
+            <option value="economics">Economics</option>
+            <option value="engineering">Engineering and Technology</option>
+            <option value="management">Management</option>
+        </select>
+    </div>
+
+    <div class="button-group">
+        <button class="btn btn-secondary" onclick="prevStep()"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-primary" onclick="nextStep()">Next <i class="fas fa-arrow-right"></i></button>
+    </div>
+</div>
 
 
         <div class="form-card" id="form-3">
@@ -1174,6 +1209,79 @@
             }
           });
         });
+        // --- CO-AUTHOR FUNCTIONALITY ---
+let coAuthorCount = 0;
+const maxCoAuthors = 4;
+
+function addCoAuthor() {
+    if (coAuthorCount >= maxCoAuthors) {
+        alert("Maximum 4 co-authors allowed.");
+        return;
+    }
+
+    coAuthorCount++;
+    const container = document.getElementById('co-authors-container');
+    const authorId = `co-author-${Date.now()}`;
+
+    // Create a new div wrapper
+    const wrapper = document.createElement('div');
+    wrapper.id = authorId;
+    // Using existing CSS variables for styling
+    wrapper.style.cssText = "background: #fff; border: 1px solid #ddd; border-left: 4px solid var(--accent); padding: 20px; border-radius: 4px; margin-bottom: 20px; position: relative;";
+
+    wrapper.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h4 style="margin: 0; color: var(--text-dark); font-size: 1rem;">Co-Author ${coAuthorCount}</h4>
+            <span onclick="removeCoAuthor('${authorId}')" style="color: #dc3545; cursor: pointer; font-weight: bold; font-size: 0.9rem;">
+                <i class="fas fa-trash"></i> Remove
+            </span>
+        </div>
+        
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="Co-Author Name">
+        </div>
+        
+        <div class="form-group">
+            <label>Email ID</label>
+            <input type="email" placeholder="Co-Author Email">
+        </div>
+        
+        <div class="form-group">
+            <label>Affiliation</label>
+            <input type="text" placeholder="University / Organization">
+        </div>
+    `;
+
+    container.appendChild(wrapper);
+    updateAddButton();
+}
+
+function removeCoAuthor(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.remove();
+        coAuthorCount--;
+        // Renumber the remaining authors
+        const container = document.getElementById('co-authors-container');
+        const authors = container.children;
+        for(let i = 0; i < authors.length; i++) {
+            const title = authors[i].querySelector('h4');
+            if(title) title.innerText = `Co-Author ${i + 1}`;
+        }
+        updateAddButton();
+    }
+}
+
+function updateAddButton() {
+    const btn = document.getElementById('btn-add-author');
+    if (coAuthorCount >= maxCoAuthors) {
+        btn.style.display = 'none';
+    } else {
+        btn.style.display = 'block';
+        btn.innerHTML = `<i class="fas fa-plus-circle"></i> Add Co-Author (${coAuthorCount}/${maxCoAuthors})`;
+    }
+}
         
         document.addEventListener('DOMContentLoaded', function() {
             fetch('https://istpublications.onrender.com/api/health', {
@@ -1183,6 +1291,8 @@
                 console.log('Backend waking up...', err.message);
             });
         }); 
+
     </script>
+    
 </body>
 </html>
