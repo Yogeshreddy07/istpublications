@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-r6mwx8k5!w30&i3pdf7l@fw4%*9m!1)60@mpt*zow&e8!n(#xf"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -57,15 +57,17 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # ADD THIS (before CommonMiddleware)
+    'corsheaders.middleware.CorsMiddleware',  # MUST be here
     'django.middleware.common.CommonMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -112,12 +114,14 @@ DATABASES = {
 # ============ CORS SETTINGS ============
 # Allow Vercel frontend to communicate with this backend
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'https://*.onrender.com',
+    "http://127.0.0.1:5501",
+    "http://localhost:5501",
+    'http://localhost:3000', 
     "https://istpublications.vercel.app", 
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -139,6 +143,8 @@ CORS_ALLOW_HEADERS = [
 ]
 # ============ CSRF SETTINGS ============
 CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:5501",
+    "http://localhost:5501",
     'http://localhost:3000',
     'https://*.onrender.com',
     'https://istpublications.onrender.com', 
@@ -152,7 +158,14 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
     ],
-}
+    
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': [
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+} 
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
