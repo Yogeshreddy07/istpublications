@@ -1872,8 +1872,7 @@
                     main_author: {
                         full_name: safeGetValue('main-name'),
                         email: safeGetValue('main-email'),
-                        affiliation: safeGetValue('main-affiliation'),
-                        country: 'India' // ✅ Backend may require this
+                        affiliation: safeGetValue('main-affiliation')
                     },
                     
                     // Reviewer 1 (Step 4) - ✅ FIXED: full_name (not fullname)
@@ -1881,8 +1880,7 @@
                         full_name: safeGetValue('rev1-name'),
                         email: safeGetValue('rev1-email'),
                         title: safeGetValue('rev1-prefix'),
-                        affiliation: safeGetValue('rev1-affiliation'),
-                        country: 'India' // ✅ Backend may require this
+                        affiliation: safeGetValue('rev1-affiliation')
                     }
                 };
 

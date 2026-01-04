@@ -552,7 +552,8 @@ class SubmissionLog(models.Model):
     def save(self, *args, **kwargs):
         if self.pk:
             raise ValidationError("Submission logs cannot be modified")
-        super().save(*args, **kwargs)
+        super().save(force_insert=True)
+
     
     def delete(self, *args, **kwargs):
         raise ValidationError("Submission logs cannot be deleted")
