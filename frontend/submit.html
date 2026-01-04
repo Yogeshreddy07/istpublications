@@ -2508,43 +2508,57 @@ const API_BASE_URL = 'https://istpublications.onrender.com/api';
 
 const SUBMIT_ENDPOINT = `${API_BASE_URL}/submit-article/`;
 
+ 
 async function submitFormToAPI() {
+ console.log('🚀 Starting form submission to API...');
 
-console.log('🚀 Starting form submission...');
-
-try {
+    try {
         const form = new FormData();
 
+        // SAFE FUNCTION: Get value or empty string
+        const safeGetValue = (id) => {
+            const el = document.getElementById(id);
+            return el ? el.value.trim() : '';
+        };
+
+        // SAFE FUNCTION: Get checkbox or false
+        const safeGetChecked = (id) => {
+            const el = document.getElementById(id);
+            return el ? el.checked : false;
+        };
+
         // ========== STEP 1 - AGREEMENTS ==========
-        form.append('step1_comments', document.getElementById('step1-comments').value.trim() || '');
-        form.append('corresponding_contact', document.getElementById('corresponding-contact').checked ? 'true' : 'false');
+        form.append('step1_comments', safeGetValue('step1-comments') || '');
+        form.append('corresponding_contact', safeGetChecked('corresponding-contact') ? 'true' : 'false');
 
         // ========== STEP 2 - MAIN AUTHOR ==========
-        form.append('main_author.full_name', document.getElementById('main-name').value.trim());
-        form.append('main_author.email', document.getElementById('main-email').value.trim());
-        form.append('main_author.affiliation', document.getElementById('main-affiliation').value.trim());
+        form.append('main_author.full_name', safeGetValue('main-name'));
+        form.append('main_author.email', safeGetValue('main-email'));
+        form.append('main_author.affiliation', safeGetValue('main-affiliation'));
 
         // ========== STEP 2 - ARTICLE METADATA ==========
-        form.append('title', document.getElementById('title').value.trim());
-        form.append('abstract', document.getElementById('abstract').value.trim());
-        form.append('keywords', document.getElementById('keywords').value.trim());
-        form.append('category', document.getElementById('category').value);
+        form.append('title', safeGetValue('title'));
+        form.append('abstract', safeGetValue('abstract'));
+        form.append('keywords', safeGetValue('keywords'));
+        
+        const categoryEl = document.getElementById('category');
+        form.append('category', categoryEl ? categoryEl.value : 'general');
 
         // ========== STEP 2 - CO-AUTHORS ==========
         const coAuthors = [];
         document.querySelectorAll('#co-authors-container .co-author-name').forEach((nameEl, idx) => {
             const emailEl = document.querySelectorAll('#co-authors-container .co-author-email')[idx];
             const affiliationEl = document.querySelectorAll('#co-authors-container .co-author-affiliation')[idx];
-            if (nameEl.value.trim() && emailEl.value.trim()) {
+            if (nameEl && nameEl.value.trim() && emailEl && emailEl.value.trim()) {
                 coAuthors.push({
                     full_name: nameEl.value.trim(),
                     email: emailEl.value.trim(),
-                    affiliation: affiliationEl.value.trim(),
+                    affiliation: affiliationEl ? affiliationEl.value.trim() : '',
                 });
             }
         });
 
-        // Send co-authors as array fields (FIXED format)
+        // Send co-authors as array fields
         coAuthors.forEach((author, index) => {
             form.append(`co_authors[${index}].full_name`, author.full_name);
             form.append(`co_authors[${index}].email`, author.email);
@@ -2552,34 +2566,36 @@ try {
         });
 
         // ========== STEP 3 - FILES ==========
-        Object.values(fileObjects).forEach(file => {
-            form.append('files', file);
-        });
-
-        // ========== STEP 4 - REVIEWER 1 (FIXED - NO JSON.stringify) ==========
-        form.append('reviewer_1.full_name', document.getElementById('rev1-name').value.trim());
-        form.append('reviewer_1.email', document.getElementById('rev1-email').value.trim());
-        form.append('reviewer_1.affiliation', document.getElementById('rev1-affiliation').value.trim());
-        form.append('reviewer_1.department', document.getElementById('rev1-department').value.trim());
-        form.append('reviewer_1.title', document.getElementById('rev1-prefix').value);
-
-        // ========== STEP 4 - REVIEWER 2 (FIXED - NO JSON.stringify, Optional) ==========
-        if (document.getElementById('add-rev2-toggle').checked) {
-            form.append('reviewer_2.full_name', document.getElementById('rev2-name').value.trim());
-            form.append('reviewer_2.email', document.getElementById('rev2-email').value.trim());
-            form.append('reviewer_2.affiliation', document.getElementById('rev2-affiliation').value.trim());
-            form.append('reviewer_2.department', document.getElementById('rev2-department').value.trim());
-            form.append('reviewer_2.title', document.getElementById('rev2-prefix').value);
+        if (typeof fileObjects !== 'undefined' && fileObjects) {
+            Object.values(fileObjects).forEach(file => {
+                if (file) form.append('files', file);
+            });
         }
 
-        // ========== STEP 5 - AGREEMENTS (FIXED - as 'true'/'false' strings) ==========
-        const copyrightCheckbox = document.getElementById('step5-copyright-agree').checked;
-        const privacyCheckbox = document.getElementById('step5-privacy-agree').checked;
+        // ========== STEP 4 - REVIEWER 1 ==========
+        form.append('reviewer_1.full_name', safeGetValue('rev1-name'));
+        form.append('reviewer_1.email', safeGetValue('rev1-email'));
+        form.append('reviewer_1.affiliation', safeGetValue('rev1-affiliation'));
+        form.append('reviewer_1.department', safeGetValue('rev1-department'));
+        form.append('reviewer_1.title', safeGetValue('rev1-prefix'));
+
+        // ========== STEP 4 - REVIEWER 2 (Optional) ==========
+        if (safeGetChecked('add-rev2-toggle')) {
+            form.append('reviewer_2.full_name', safeGetValue('rev2-name'));
+            form.append('reviewer_2.email', safeGetValue('rev2-email'));
+            form.append('reviewer_2.affiliation', safeGetValue('rev2-affiliation'));
+            form.append('reviewer_2.department', safeGetValue('rev2-department'));
+            form.append('reviewer_2.title', safeGetValue('rev2-prefix'));
+        }
+
+        // ========== STEP 5 - AGREEMENTS ==========
+        const copyrightCheckbox = safeGetChecked('step5-copyright-agree');
+        const privacyCheckbox = safeGetChecked('step5-privacy-agree');
 
         form.append('copyright_agreed', copyrightCheckbox ? 'true' : 'false');
         form.append('privacy_agreed', privacyCheckbox ? 'true' : 'false');
 
-        console.log('📤 Sending to API...');
+        console.log('📤 Sending data to API...');
 
         const response = await fetch(SUBMIT_ENDPOINT, {
             method: 'POST',
@@ -2590,7 +2606,7 @@ try {
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('❌ Error:', errorData);
+            console.error('❌ API Error:', errorData);
             
             let errorMsg = '❌ Submission failed:\n';
             if (errorData.detail) {
@@ -2612,19 +2628,19 @@ try {
         }
 
         const result = await response.json();
-        console.log('✅ Success:', result);
+        console.log('✅ Submission successful:', result);
 
-        // Extract submission number
+        // Extract submission number from response
         const submissionNumber = result.submission_number || 'PENDING';
 
-        // Display success message
+        // Display success message with submission number
         alert(`✅ Submission successful!\n\nSubmission Number: ${submissionNumber}\n\nYou will receive a confirmation email shortly.`);
 
         // Show success step (Step 6)
         currentStep = 6;
         updateStepIndicators();
 
-        // Update step 6 with submission number
+        // Update step 6 with actual submission number
         const successDiv = document.querySelector('#form-6');
         if (successDiv) {
             successDiv.innerHTML = `
@@ -2634,6 +2650,10 @@ try {
                     <h3 style="color: #28a745; margin-bottom: 10px;">Thank you for your submission!</h3>
                     <p style="color: var(--text-light); margin-bottom: 0; font-size: 1.1rem;"><strong>Submission Number: ${submissionNumber}</strong></p>
                     <p style="color: var(--text-light); margin-top: 10px;">Your submission has been received and the journal has been notified. You'll receive a confirmation email shortly.</p>
+                    <p style="color: var(--text-light); margin-top: 20px; font-size: 0.9rem;">
+                        <strong>What happens next?</strong><br>
+                        Your article will be reviewed by our editorial team. You'll receive updates via email at each stage of the review process.
+                    </p>
                 </div>
             `;
         }
@@ -2642,7 +2662,8 @@ try {
 
     } catch (error) {
         console.error('💥 Error:', error);
-        alert(`❌ An error occurred:\n${error.message}`);
+        console.error('Error Stack:', error.stack);
+        alert(`❌ An error occurred during submission:\n${error.message}`);
         return false;
     }
 }
