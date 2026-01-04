@@ -2146,7 +2146,7 @@ const privacy = document.getElementById('privacy').checked;
 
 if (!copyright) {
 
-alert('❌ Please agree to the copyright statement to proceed.');
+alert('Please agree to the copyright statement to proceed.');
 
 return false;
 
@@ -2154,13 +2154,13 @@ return false;
 
 if (!privacy) {
 
-alert('❌ Please agree to the privacy statement to proceed.');
+alert('Please agree to the privacy statement to proceed.');
 
 return false;
 
 }
 
-console.log('✅ Step 1 Data Validated');
+console.log('Step 1 Data Validated');
 
 return true;
 
@@ -2518,53 +2518,32 @@ const form = new FormData();
 
 // Step 1
 
-form.append('step1_comments', document.getElementById('step1-comments').value);
+// ========== MAIN AUTHOR - FIXED ==========
+form.append('main_author.full_name', document.getElementById('main-name').value.trim());
+form.append('main_author.email', document.getElementById('main-email').value.trim());
+form.append('main_author.affiliation', document.getElementById('main-affiliation').value.trim());
 
-form.append('corresponding_contact', document.getElementById('corresponding').checked);
-
-form.append('copyright_agreed', document.getElementById('copyright').checked);
-
-form.append('privacy_agreed', document.getElementById('privacy').checked);
-
-// Step 2
-
-form.append('main_author', JSON.stringify({
-
-full_name: document.getElementById('main-name').value.trim(),
-
-email: document.getElementById('main-email').value.trim(),
-
-affiliation: document.getElementById('main-affiliation').value.trim(),
-
-}));
-
-// Co-Authors
-
+// ========== CO-AUTHORS - FIXED ==========
 const coAuthors = [];
-
 document.querySelectorAll('#co-authors-container .co-author-name').forEach((nameEl, idx) => {
-
-const emailEl = document.querySelectorAll('#co-authors-container .co-author-email')[idx];
-
-const affiliationEl = document.querySelectorAll('#co-authors-container .co-author-affiliation')[idx];
-
-if (nameEl.value.trim() && emailEl.value.trim()) {
-
-coAuthors.push({
-
-full_name: nameEl.value.trim(),
-
-email: emailEl.value.trim(),
-
-affiliation: affiliationEl.value.trim(),
-
+    const emailEl = document.querySelectorAll('#co-authors-container .co-author-email')[idx];
+    const affiliationEl = document.querySelectorAll('#co-authors-container .co-author-affiliation')[idx];
+    if (nameEl.value.trim() && emailEl.value.trim()) {
+        coAuthors.push({
+            full_name: nameEl.value.trim(),
+            email: emailEl.value.trim(),
+            affiliation: affiliationEl.value.trim(),
+        });
+    }
 });
 
-}
-
+// Send co-authors as array fields (not JSON string)
+coAuthors.forEach((author, index) => {
+    form.append(`co_authors[${index}].full_name`, author.full_name);
+    form.append(`co_authors[${index}].email`, author.email);
+    form.append(`co_authors[${index}].affiliation`, author.affiliation);
 });
 
-form.append('co_authors', JSON.stringify(coAuthors));
 
 // Metadata
 
