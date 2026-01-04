@@ -550,9 +550,10 @@ class SubmissionLog(models.Model):
     
     # Make log immutable - prevent updates
     def save(self, *args, **kwargs):
-        if self.pk:
+    # Allow initial insert
+        if self.pk and not kwargs.get("force_insert", False):
             raise ValidationError("Submission logs cannot be modified")
-        super().save(force_insert=True)
+        super().save(*args, **kwargs)
 
     
     def delete(self, *args, **kwargs):
