@@ -386,92 +386,91 @@ class FormSubmissionSerializer(serializers.Serializer):
                 raise serializers.ValidationError("File size must not exceed 100MB")
         
         return value
-    
-    def create(self, validated_data):
-        """Create submission from form data"""
-        # Create main author
-        main_author_data = validated_data.pop('main_author')
-        main_author, _ = Author.objects.get_or_create(
-            email=main_author_data['email'],
+def create(self, validated_data):
+    validated_data = validated_data.copy()
+
+    # Authors
+    main_author_data = validated_data.pop('main_author')
+    main_author, _ = Author.objects.get_or_create(
+        email=main_author_data['email'],
+        defaults={
+            'full_name': main_author_data['full_name'],
+            'affiliation': main_author_data['affiliation'],
+            'role': 'author'
+        }
+    )
+
+    co_authors_data = validated_data.pop('co_authors', [])
+    co_authors = []
+    for data in co_authors_data:
+        author, _ = Author.objects.get_or_create(
+            email=data['email'],
             defaults={
-                'full_name': main_author_data['full_name'],
-                'affiliation': main_author_data['affiliation'],
-                'role': 'author'
+                'full_name': data['full_name'],
+                'affiliation': data['affiliation'],
+                'role': 'co-author'
             }
         )
-        
-        # Create co-authors
-        co_authors = []
-        for co_author_data in validated_data.pop('co_authors', []):
-            author, _ = Author.objects.get_or_create(
-                email=co_author_data['email'],
-                defaults={
-                    'full_name': co_author_data['full_name'],
-                    'affiliation': co_author_data['affiliation'],
-                    'role': 'co-author'
-                }
-            )
-            co_authors.append(author)
-        
-        # Create reviewers
-        reviewer_1_data = validated_data.pop('reviewer_1', None)
-        reviewer_2_data = validated_data.pop('reviewer_2', None)
-        
-        reviewer_1 = None
-        if reviewer_1_data:
-            reviewer_1, _ = Author.objects.get_or_create(
-                email=reviewer_1_data['email'],
-                defaults={
-                    'full_name': reviewer_1_data['full_name'],
-                    'affiliation': reviewer_1_data['affiliation'],
-                    'department': reviewer_1_data.get('department', ''),
-                    'title': reviewer_1_data.get('title'),
-                    'role': 'reviewer'
-                }
-            )
-        
-        reviewer_2 = None
-        if reviewer_2_data:
-            reviewer_2, _ = Author.objects.get_or_create(
-                email=reviewer_2_data['email'],
-                defaults={
-                    'full_name': reviewer_2_data['full_name'],
-                    'affiliation': reviewer_2_data['affiliation'],
-                    'department': reviewer_2_data.get('department', ''),
-                    'title': reviewer_2_data.get('title'),
-                    'role': 'reviewer'
-                }
-            )
-        
-        # Handle files
-        files = validated_data.pop('files', [])
-        
-        # Create submission
-        submission = Submission.objects.create(
-            main_author=main_author,
-            reviewer_1=reviewer_1,
-            reviewer_2=reviewer_2,
-            editor_comments=validated_data.pop('step1_comments', ''),
-            **validated_data
+        co_authors.append(author)
+
+    reviewer_1_data = validated_data.pop('reviewer_1', None)
+    reviewer_2_data = validated_data.pop('reviewer_2', None)
+
+    reviewer_1 = reviewer_2 = None
+
+    if reviewer_1_data:
+        reviewer_1, _ = Author.objects.get_or_create(
+            email=reviewer_1_data['email'],
+            defaults={
+                'full_name': reviewer_1_data['full_name'],
+                'affiliation': reviewer_1_data['affiliation'],
+                'department': reviewer_1_data.get('department', ''),
+                'title': reviewer_1_data.get('title'),
+                'role': 'reviewer'
+            }
         )
-        
-        # Add co-authors
-        for co_author in co_authors[:4]:
-            submission.co_authors.add(co_author)
-        
-        # Create submission files
-        for file in files:
-            SubmissionFile.objects.create(
-                submission=submission,
-                file=file
-            )
-        
-        # Log submission
-        from .models import SubmissionLog
-        SubmissionLog.objects.create(
+
+    if reviewer_2_data:
+        reviewer_2, _ = Author.objects.get_or_create(
+            email=reviewer_2_data['email'],
+            defaults={
+                'full_name': reviewer_2_data['full_name'],
+                'affiliation': reviewer_2_data['affiliation'],
+                'department': reviewer_2_data.get('department', ''),
+                'title': reviewer_2_data.get('title'),
+                'role': 'reviewer'
+            }
+        )
+
+    files = validated_data.pop('files', [])
+
+    submission = Submission.objects.create(
+        main_author=main_author,
+        reviewer_1=reviewer_1,
+        reviewer_2=reviewer_2,
+        editor_comments=validated_data.pop('step1_comments', ''),
+        title=validated_data.pop('title'),
+        abstract=validated_data.pop('abstract'),
+        keywords=validated_data.pop('keywords'),
+        category=validated_data.pop('category'),
+        corresponding_contact=validated_data.pop('corresponding_contact'),
+        copyright_agreed=validated_data.pop('copyright_agreed'),
+        privacy_agreed=validated_data.pop('privacy_agreed'),
+    )
+
+    for author in co_authors[:4]:
+        submission.co_authors.add(author)
+
+    for file in files:
+        SubmissionFile.objects.create(
             submission=submission,
-            action='submitted',
-            description='Article submitted via web form'
+            file=file
         )
-        
-        return submission
+
+    SubmissionLog.objects.create(
+        submission=submission,
+        action='submitted',
+        description='Article submitted via web form'
+    )
+
+    return submission
