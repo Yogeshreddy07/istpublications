@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'submissions',
+    'emails',
     # Our apps
     'contact.apps.ContactConfig',
 ]
@@ -161,8 +162,54 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser',
     ],
 }
- 
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = 'noreply@istpublications.com'
+SERVER_EMAIL = 'server@istpublications.com'
+ADMIN_EMAIL = os.getenv('ADMIN_EMAIL')
+FRONTEND_URL = os.getenv('FRONTEND_URL')
+BACKEND_URL = os.getenv('BACKEND_URL')
+EMAIL_TIMEOUT = 30
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://istpublications.com')
+BACKEND_URL = os.getenv('BACKEND_URL', 'https://api.istpublications.com')
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/email.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10 MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'apps.emails': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
