@@ -1835,15 +1835,13 @@
             updateStepIndicators();
         }
 
-        // API SUBMISSION
+        // API SUBMISSION - FIXED JSON FORMAT
         const API_BASE_URL = 'https://istpublications.onrender.com/api';
         const SUBMIT_ENDPOINT = `${API_BASE_URL}/submit-article/`;
 
         async function submitFormToAPI() {
             console.log('Starting form submission to API...');
             try {
-                const form = new FormData();
-
                 // SAFE FUNCTION: Get value or empty string
                 const safeGetValue = (id) => {
                     const el = document.getElementById(id);
@@ -1856,70 +1854,65 @@
                     return el ? el.checked : false;
                 };
 
-                // STEP 1 - AGREEMENTS
-                form.append('step1_comments', safeGetValue('step1-comments'));
-                form.append('corresponding_contact', safeGetChecked('corresponding-contact') ? 'true' : 'false');
+                // Build proper JSON structure for API
+                const jsonPayload = {
+                    comments: safeGetValue('step1-comments'),
+                    corresponding_contact: safeGetChecked('corresponding'),
+                    main_author: {
+                        full_name: safeGetValue('main-name'),
+                        email: safeGetValue('main-email'),
+                        affiliation: safeGetValue('main-affiliation')
+                    },
+                    title: safeGetValue('title'),
+                    abstract: safeGetValue('abstract'),
+                    keywords: safeGetValue('keywords'),
+                    category: document.getElementById('category') ? document.getElementById('category').value : 'general',
+                    reviewer_1: {
+                        full_name: safeGetValue('rev1-name'),
+                        email: safeGetValue('rev1-email'),
+                        affiliation: safeGetValue('rev1-affiliation'),
+                        department: safeGetValue('rev1-department'),
+                        title: safeGetValue('rev1-prefix')
+                    },
+                    copyright_agreed: safeGetChecked('check1'),
+                    privacy_agreed: safeGetChecked('check2')
+                };
 
-                // STEP 2 - MAIN AUTHOR
-                form.append('main_author.fullname', safeGetValue('main-name'));
-                form.append('main_author.email', safeGetValue('main-email'));
-                form.append('main_author.affiliation', safeGetValue('main-affiliation'));
-
-                // STEP 2 - ARTICLE METADATA
-                form.append('title', safeGetValue('title'));
-                form.append('abstract', safeGetValue('abstract'));
-                form.append('keywords', safeGetValue('keywords'));
-                const categoryEl = document.getElementById('category');
-                form.append('category', categoryEl ? categoryEl.value : 'general');
-
-                // STEP 2 - CO-AUTHORS
-                const coAuthors = document.querySelectorAll('#co-authors-container .co-author-name');
-                coAuthors.forEach((nameEl, idx) => {
-                    const emailEl = document.querySelectorAll('#co-authors-container .co-author-email')[idx];
-                    const affiliationEl = document.querySelectorAll('#co-authors-container .co-author-affiliation')[idx];
-
-                    if (nameEl && nameEl.value.trim() && emailEl && emailEl.value.trim()) {
-                        form.append(`co_authors[${idx}].fullname`, nameEl.value.trim());
-                        form.append(`co_authors[${idx}].email`, emailEl.value.trim());
-                        form.append(`co_authors[${idx}].affiliation`, affiliationEl ? affiliationEl.value.trim() : '');
-                    }
-                });
-
-                // STEP 3 - FILES
-                if (typeof fileObjects !== 'undefined') {
-                    Object.values(fileObjects).forEach((file) => {
-                        if (file) {
-                            form.append('files', file);
+                // Add co-authors if present
+                const coAuthorNames = document.querySelectorAll('#co-authors-container .co-author-name');
+                if (coAuthorNames.length > 0) {
+                    jsonPayload.co_authors = [];
+                    const coAuthorEmails = document.querySelectorAll('#co-authors-container .co-author-email');
+                    const coAuthorAffiliations = document.querySelectorAll('#co-authors-container .co-author-affiliation');
+                    coAuthorNames.forEach((nameEl, idx) => {
+                        if (nameEl.value.trim() && coAuthorEmails[idx].value.trim()) {
+                            jsonPayload.co_authors.push({
+                                full_name: nameEl.value.trim(),
+                                email: coAuthorEmails[idx].value.trim(),
+                                affiliation: coAuthorAffiliations[idx] ? coAuthorAffiliations[idx].value.trim() : ''
+                            });
                         }
                     });
                 }
 
-                // STEP 4 - REVIEWER 1
-                form.append('reviewer_1.fullname', safeGetValue('rev1-name'));
-                form.append('reviewer_1.email', safeGetValue('rev1-email'));
-                form.append('reviewer_1.affiliation', safeGetValue('rev1-affiliation'));
-                form.append('reviewer_1.department', safeGetValue('rev1-department'));
-                form.append('reviewer_1.title', safeGetValue('rev1-prefix'));
-
-                // STEP 4 - REVIEWER 2 (Optional)
+                // Add reviewer 2 if selected
                 if (safeGetChecked('add-rev2-toggle')) {
-                    form.append('reviewer_2.fullname', safeGetValue('rev2-name'));
-                    form.append('reviewer_2.email', safeGetValue('rev2-email'));
-                    form.append('reviewer_2.affiliation', safeGetValue('rev2-affiliation'));
-                    form.append('reviewer_2.department', safeGetValue('rev2-department'));
-                    form.append('reviewer_2.title', safeGetValue('rev2-prefix'));
+                    jsonPayload.reviewer_2 = {
+                        full_name: safeGetValue('rev2-name'),
+                        email: safeGetValue('rev2-email'),
+                        affiliation: safeGetValue('rev2-affiliation'),
+                        department: safeGetValue('rev2-department'),
+                        title: safeGetValue('rev2-prefix')
+                    };
                 }
 
-                // STEP 5 - AGREEMENTS
-                const copyrightCheckbox = safeGetChecked('check1');
-                const privacyCheckbox = safeGetChecked('check2');
-                form.append('copyright_agreed', copyrightCheckbox ? 'true' : 'false');
-                form.append('privacy_agreed', privacyCheckbox ? 'true' : 'false');
-
-                console.log('Sending data to API...');
+                console.log('Sending JSON payload:', jsonPayload);
                 const response = await fetch(SUBMIT_ENDPOINT, {
                     method: 'POST',
-                    body: form,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jsonPayload)
                 });
 
                 console.log('Response status:', response.status);
@@ -1930,7 +1923,7 @@
                     let errorMsg = 'Submission failed';
                     if (errorData.detail) {
                         errorMsg = errorData.detail;
-                    } else {
+                    } else if (typeof errorData === 'object') {
                         Object.keys(errorData).forEach((key) => {
                             if (Array.isArray(errorData[key])) {
                                 errorMsg = `${key}: ${errorData[key].join(', ')}`;
@@ -2007,11 +2000,6 @@
             navLinks.classList.remove('active');
             contactDrawer.classList.remove('active');
             overlay.classList.remove('active');
-            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-            menuCloseBtn.addEventListener('click', closeAll);
-            contactTab.addEventListener('click', openContactDrawer);
-            closeDrawerBtn.addEventListener('click', closeAll);
-            overlay.addEventListener('click', closeAll);
         }
 
         mobileMenuBtn.addEventListener('click', toggleMobileMenu);
