@@ -454,7 +454,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 // Wake up Render backend when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('https://istpublications.onrender.com/api/health', {
+    fetch('https://istpublications.onrender.com/api/health/', {
         method: 'GET',
         headers: { 'Accept': 'application/json' }
     }).catch(err => {
