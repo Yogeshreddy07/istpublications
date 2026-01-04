@@ -1854,31 +1854,39 @@
                     return el ? el.checked : false;
                 };
 
-                // Build proper JSON structure for API
+                // ✅ BACKEND EXPECTS: full_name (not fullname)
                 const jsonPayload = {
-                    comments: safeGetValue('step1-comments'),
+                    // Step 1 data
+                    step1_comments: safeGetValue('step1-comments'),
                     corresponding_contact: safeGetChecked('corresponding'),
-                    main_author: {
-                        full_name: safeGetValue('main-name'),
-                        email: safeGetValue('main-email'),
-                        affiliation: safeGetValue('main-affiliation')
-                    },
+                    copyright_agreed: safeGetChecked('check1'),
+                    privacy_agreed: safeGetChecked('check2'),
+                    
+                    // Article metadata (Step 2)
                     title: safeGetValue('title'),
                     abstract: safeGetValue('abstract'),
                     keywords: safeGetValue('keywords'),
-                    category: document.getElementById('category') ? document.getElementById('category').value : 'general',
+                    category: document.getElementById('category') ? document.getElementById('category').value : '',
+                    
+                    // Main author (Step 2) - ✅ FIXED: full_name (not fullname)
+                    main_author: {
+                        full_name: safeGetValue('main-name'),
+                        email: safeGetValue('main-email'),
+                        affiliation: safeGetValue('main-affiliation'),
+                        country: 'India' // ✅ Backend may require this
+                    },
+                    
+                    // Reviewer 1 (Step 4) - ✅ FIXED: full_name (not fullname)
                     reviewer_1: {
                         full_name: safeGetValue('rev1-name'),
                         email: safeGetValue('rev1-email'),
+                        title: safeGetValue('rev1-prefix'),
                         affiliation: safeGetValue('rev1-affiliation'),
-                        department: safeGetValue('rev1-department'),
-                        title: safeGetValue('rev1-prefix')
-                    },
-                    copyright_agreed: safeGetChecked('check1'),
-                    privacy_agreed: safeGetChecked('check2')
+                        country: 'India' // ✅ Backend may require this
+                    }
                 };
 
-                // Add co-authors if present
+                // Add co-authors if present (Step 2) - ✅ FIXED: full_name
                 const coAuthorNames = document.querySelectorAll('#co-authors-container .co-author-name');
                 if (coAuthorNames.length > 0) {
                     jsonPayload.co_authors = [];
@@ -1889,23 +1897,27 @@
                             jsonPayload.co_authors.push({
                                 full_name: nameEl.value.trim(),
                                 email: coAuthorEmails[idx].value.trim(),
-                                affiliation: coAuthorAffiliations[idx] ? coAuthorAffiliations[idx].value.trim() : ''
+                                affiliation: coAuthorAffiliations[idx] ? coAuthorAffiliations[idx].value.trim() : '',
+                                country: 'India'
                             });
                         }
                     });
                 }
 
-                // Add reviewer 2 if selected
-                if (safeGetChecked('add-rev2-toggle')) {
+                // Add reviewer 2 if selected (Step 4) - ✅ FIXED: full_name
+                if (safeGetChecked('add-rev2-toggle') && safeGetValue('rev2-name')) {
                     jsonPayload.reviewer_2 = {
                         full_name: safeGetValue('rev2-name'),
                         email: safeGetValue('rev2-email'),
+                        title: safeGetValue('rev2-prefix'),
                         affiliation: safeGetValue('rev2-affiliation'),
-                        department: safeGetValue('rev2-department'),
-                        title: safeGetValue('rev2-prefix')
+                        country: 'India' // ✅ Backend may require this
                     };
                 }
 
+                // ✅ DEBUG: Log payload structure before sending
+                console.log('🔍 MAIN AUTHOR:', jsonPayload.main_author);
+                console.log('🔍 REVIEWER 1:', jsonPayload.reviewer_1);
                 console.log('Sending JSON payload:', jsonPayload);
                 const response = await fetch(SUBMIT_ENDPOINT, {
                     method: 'POST',
@@ -1915,26 +1927,32 @@
                     body: JSON.stringify(jsonPayload)
                 });
 
-                console.log('Response status:', response.status);
-
-                if (!response.ok) {
+                console.log('Response status:', response.status);                    if (!response.ok) {
                     const errorData = await response.json();
-                    console.error('API Error:', errorData);
-                    let errorMsg = 'Submission failed';
-                    if (errorData.detail) {
-                        errorMsg = errorData.detail;
-                    } else if (typeof errorData === 'object') {
+                    console.error('API Error Details:', errorData);
+                    let errorMsg = 'Submission failed:\n\n';
+                    
+                    // Handle nested errors (main_author, reviewer_1, etc.)
+                    if (typeof errorData === 'object') {
                         Object.keys(errorData).forEach((key) => {
-                            if (Array.isArray(errorData[key])) {
-                                errorMsg = `${key}: ${errorData[key].join(', ')}`;
-                            } else if (typeof errorData[key] === 'object') {
-                                errorMsg = `${key}: ${JSON.stringify(errorData[key])}`;
-                            } else {
-                                errorMsg = `${key}: ${errorData[key]}`;
+                            if (typeof errorData[key] === 'object' && errorData[key] !== null) {
+                                // Nested object error (e.g., main_author.full_name)
+                                Object.keys(errorData[key]).forEach((nestedKey) => {
+                                    if (Array.isArray(errorData[key][nestedKey])) {
+                                        errorMsg += `❌ ${key}.${nestedKey}: ${errorData[key][nestedKey].join(', ')}\n`;
+                                    } else {
+                                        errorMsg += `❌ ${key}.${nestedKey}: ${errorData[key][nestedKey]}\n`;
+                                    }
+                                });
+                            } else if (Array.isArray(errorData[key])) {
+                                errorMsg += `❌ ${key}: ${errorData[key].join(', ')}\n`;
+                            } else if (errorData[key]) {
+                                errorMsg += `❌ ${key}: ${errorData[key]}\n`;
                             }
                         });
                     }
-                    alert(errorMsg);
+                    
+                    alert(errorMsg || 'Submission failed. Please check all required fields.');
                     return false;
                 }
 
