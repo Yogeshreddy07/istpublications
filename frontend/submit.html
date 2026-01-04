@@ -2513,148 +2513,138 @@ async function submitFormToAPI() {
 console.log('🚀 Starting form submission...');
 
 try {
+        const form = new FormData();
 
-const form = new FormData();
+        // ========== STEP 1 - AGREEMENTS ==========
+        form.append('step1_comments', document.getElementById('step1-comments').value.trim() || '');
+        form.append('corresponding_contact', document.getElementById('corresponding-contact').checked ? 'true' : 'false');
 
-// Step 1
+        // ========== STEP 2 - MAIN AUTHOR ==========
+        form.append('main_author.full_name', document.getElementById('main-name').value.trim());
+        form.append('main_author.email', document.getElementById('main-email').value.trim());
+        form.append('main_author.affiliation', document.getElementById('main-affiliation').value.trim());
 
-// ========== MAIN AUTHOR - FIXED ==========
-form.append('main_author.full_name', document.getElementById('main-name').value.trim());
-form.append('main_author.email', document.getElementById('main-email').value.trim());
-form.append('main_author.affiliation', document.getElementById('main-affiliation').value.trim());
+        // ========== STEP 2 - ARTICLE METADATA ==========
+        form.append('title', document.getElementById('title').value.trim());
+        form.append('abstract', document.getElementById('abstract').value.trim());
+        form.append('keywords', document.getElementById('keywords').value.trim());
+        form.append('category', document.getElementById('category').value);
 
-// ========== CO-AUTHORS - FIXED ==========
-const coAuthors = [];
-document.querySelectorAll('#co-authors-container .co-author-name').forEach((nameEl, idx) => {
-    const emailEl = document.querySelectorAll('#co-authors-container .co-author-email')[idx];
-    const affiliationEl = document.querySelectorAll('#co-authors-container .co-author-affiliation')[idx];
-    if (nameEl.value.trim() && emailEl.value.trim()) {
-        coAuthors.push({
-            full_name: nameEl.value.trim(),
-            email: emailEl.value.trim(),
-            affiliation: affiliationEl.value.trim(),
+        // ========== STEP 2 - CO-AUTHORS ==========
+        const coAuthors = [];
+        document.querySelectorAll('#co-authors-container .co-author-name').forEach((nameEl, idx) => {
+            const emailEl = document.querySelectorAll('#co-authors-container .co-author-email')[idx];
+            const affiliationEl = document.querySelectorAll('#co-authors-container .co-author-affiliation')[idx];
+            if (nameEl.value.trim() && emailEl.value.trim()) {
+                coAuthors.push({
+                    full_name: nameEl.value.trim(),
+                    email: emailEl.value.trim(),
+                    affiliation: affiliationEl.value.trim(),
+                });
+            }
         });
+
+        // Send co-authors as array fields (FIXED format)
+        coAuthors.forEach((author, index) => {
+            form.append(`co_authors[${index}].full_name`, author.full_name);
+            form.append(`co_authors[${index}].email`, author.email);
+            form.append(`co_authors[${index}].affiliation`, author.affiliation);
+        });
+
+        // ========== STEP 3 - FILES ==========
+        Object.values(fileObjects).forEach(file => {
+            form.append('files', file);
+        });
+
+        // ========== STEP 4 - REVIEWER 1 (FIXED - NO JSON.stringify) ==========
+        form.append('reviewer_1.full_name', document.getElementById('rev1-name').value.trim());
+        form.append('reviewer_1.email', document.getElementById('rev1-email').value.trim());
+        form.append('reviewer_1.affiliation', document.getElementById('rev1-affiliation').value.trim());
+        form.append('reviewer_1.department', document.getElementById('rev1-department').value.trim());
+        form.append('reviewer_1.title', document.getElementById('rev1-prefix').value);
+
+        // ========== STEP 4 - REVIEWER 2 (FIXED - NO JSON.stringify, Optional) ==========
+        if (document.getElementById('add-rev2-toggle').checked) {
+            form.append('reviewer_2.full_name', document.getElementById('rev2-name').value.trim());
+            form.append('reviewer_2.email', document.getElementById('rev2-email').value.trim());
+            form.append('reviewer_2.affiliation', document.getElementById('rev2-affiliation').value.trim());
+            form.append('reviewer_2.department', document.getElementById('rev2-department').value.trim());
+            form.append('reviewer_2.title', document.getElementById('rev2-prefix').value);
+        }
+
+        // ========== STEP 5 - AGREEMENTS (FIXED - as 'true'/'false' strings) ==========
+        const copyrightCheckbox = document.getElementById('step5-copyright-agree').checked;
+        const privacyCheckbox = document.getElementById('step5-privacy-agree').checked;
+
+        form.append('copyright_agreed', copyrightCheckbox ? 'true' : 'false');
+        form.append('privacy_agreed', privacyCheckbox ? 'true' : 'false');
+
+        console.log('📤 Sending to API...');
+
+        const response = await fetch(SUBMIT_ENDPOINT, {
+            method: 'POST',
+            body: form,
+        });
+
+        console.log('📥 Response status:', response.status);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('❌ Error:', errorData);
+            
+            let errorMsg = '❌ Submission failed:\n';
+            if (errorData.detail) {
+                errorMsg += errorData.detail;
+            } else {
+                Object.keys(errorData).forEach(key => {
+                    if (Array.isArray(errorData[key])) {
+                        errorMsg += `• ${key}: ${errorData[key].join(', ')}\n`;
+                    } else if (typeof errorData[key] === 'object') {
+                        errorMsg += `• ${key}: ${JSON.stringify(errorData[key])}\n`;
+                    } else {
+                        errorMsg += `• ${key}: ${errorData[key]}\n`;
+                    }
+                });
+            }
+            
+            alert(errorMsg);
+            return false;
+        }
+
+        const result = await response.json();
+        console.log('✅ Success:', result);
+
+        // Extract submission number
+        const submissionNumber = result.submission_number || 'PENDING';
+
+        // Display success message
+        alert(`✅ Submission successful!\n\nSubmission Number: ${submissionNumber}\n\nYou will receive a confirmation email shortly.`);
+
+        // Show success step (Step 6)
+        currentStep = 6;
+        updateStepIndicators();
+
+        // Update step 6 with submission number
+        const successDiv = document.querySelector('#form-6');
+        if (successDiv) {
+            successDiv.innerHTML = `
+                <h2><i class="fas fa-check-circle" style="color: #28a745;"></i> Submission Successful!</h2>
+                <div style="text-align: center; padding: 40px 0;">
+                    <i class="fas fa-check-circle" style="font-size: 3rem; color: #28a745; margin-bottom: 15px; display: block;"></i>
+                    <h3 style="color: #28a745; margin-bottom: 10px;">Thank you for your submission!</h3>
+                    <p style="color: var(--text-light); margin-bottom: 0; font-size: 1.1rem;"><strong>Submission Number: ${submissionNumber}</strong></p>
+                    <p style="color: var(--text-light); margin-top: 10px;">Your submission has been received and the journal has been notified. You'll receive a confirmation email shortly.</p>
+                </div>
+            `;
+        }
+
+        return true;
+
+    } catch (error) {
+        console.error('💥 Error:', error);
+        alert(`❌ An error occurred:\n${error.message}`);
+        return false;
     }
-});
-
-// Send co-authors as array fields (not JSON string)
-coAuthors.forEach((author, index) => {
-    form.append(`co_authors[${index}].full_name`, author.full_name);
-    form.append(`co_authors[${index}].email`, author.email);
-    form.append(`co_authors[${index}].affiliation`, author.affiliation);
-});
-
-
-// Metadata
-
-form.append('title', document.getElementById('title').value.trim());
-
-form.append('abstract', document.getElementById('abstract').value.trim());
-
-form.append('keywords', document.getElementById('keywords').value.trim());
-
-form.append('category', document.getElementById('category').value);
-
-// Step 4 - Reviewers
-
-form.append('reviewer_1', JSON.stringify({
-
-title: document.getElementById('rev1-prefix').value,
-
-full_name: document.getElementById('rev1-name').value.trim(),
-
-email: document.getElementById('rev1-email').value.trim(),
-
-department: document.getElementById('rev1-department').value.trim(),
-
-affiliation: document.getElementById('rev1-affiliation').value.trim(),
-
-}));
-
-if (document.getElementById('add-rev2-toggle').checked) {
-
-form.append('reviewer_2', JSON.stringify({
-
-title: document.getElementById('rev2-prefix').value,
-
-full_name: document.getElementById('rev2-name').value.trim(),
-
-email: document.getElementById('rev2-email').value.trim(),
-
-department: document.getElementById('rev2-department').value.trim(),
-
-affiliation: document.getElementById('rev2-affiliation').value.trim(),
-
-}));
-
-}
-
-// Files - Use File objects
-
-Object.values(fileObjects).forEach(file => {
-
-form.append('files', file);
-
-});
-
-console.log('📤 Sending to API...');
-
-const response = await fetch(SUBMIT_ENDPOINT, {
-
-method: 'POST',
-
-body: form,
-
-});
-
-console.log('📥 Response status:', response.status);
-
-if (!response.ok) {
-
-const errorData = await response.json();
-
-console.error('❌ Error:', errorData);
-
-let errorMsg = '❌ Submission failed:\n';
-
-if (errorData.detail) {
-
-errorMsg += errorData.detail;
-
-} else {
-
-Object.keys(errorData).forEach(key => {
-
-errorMsg += `${key}: ${Array.isArray(errorData[key]) ? errorData[key].join(', ') : errorData[key]}\n`;
-
-});
-
-}
-
-alert(errorMsg);
-
-return;
-
-}
-
-const result = await response.json();
-
-console.log('✅ Success:', result);
-
-currentStep = 6;
-
-updateStepIndicators();
-
-alert('✅ Submission successful!\n\nSubmission Number: ' + (result.submission_number || 'PENDING'));
-
-} catch (error) {
-
-console.error('💥 Error:', error);
-
-alert('❌ An error occurred:\n' + error.message);
-
-}
-
 }
 
 // ============================================================================
