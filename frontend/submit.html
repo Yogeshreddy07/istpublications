@@ -981,9 +981,9 @@
                     <label for="subject">Subject</label>
                     <select id="subject" required>
                         <option value="">-- Select Subject --</option>
-                        <option value="papersubmission">Paper Submission</option>
-                        <option value="generalinquiry">General Inquiry</option>
-                        <option value="buyjournal">Buy Journal or Book</option>
+                        <option value="paper_submission">Paper Submission</option>
+                        <option value="general_inquiry">General Inquiry</option>
+                        <option value="buy_journal">Buy Journal or Book</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1483,11 +1483,11 @@
             
             // Validation
             if (!copyright) {
-                alert('❌ Please agree to the copyright statement to proceed.');
+                alert('Please agree to the copyright statement to proceed.');
                 return false;
             }
             if (!privacy) {
-                alert('❌ Please agree to the privacy statement to proceed.');
+                alert('Please agree to the privacy statement to proceed.');
                 return false;
             }
             
@@ -1499,7 +1499,7 @@
                 corresponding_contact: corresponding
             };
             
-            console.log('✅ Step 1 Data Validated');
+            console.log('Step 1 Data Validated');
             return true;
         }
 
@@ -1914,8 +1914,8 @@
                 }
 
                 // ✅ DEBUG: Log payload structure before sending
-                console.log('🔍 MAIN AUTHOR:', jsonPayload.main_author);
-                console.log('🔍 REVIEWER 1:', jsonPayload.reviewer_1);
+                console.log(' MAIN AUTHOR:', jsonPayload.main_author);
+                console.log(' REVIEWER 1:', jsonPayload.reviewer_1);
                 console.log('Sending JSON payload:', jsonPayload);
                 const response = await fetch(SUBMIT_ENDPOINT, {
                     method: 'POST',
@@ -1937,15 +1937,15 @@
                                 // Nested object error (e.g., main_author.full_name)
                                 Object.keys(errorData[key]).forEach((nestedKey) => {
                                     if (Array.isArray(errorData[key][nestedKey])) {
-                                        errorMsg += `❌ ${key}.${nestedKey}: ${errorData[key][nestedKey].join(', ')}\n`;
+                                        errorMsg += `  ${key}.${nestedKey}: ${errorData[key][nestedKey].join(', ')}\n`;
                                     } else {
-                                        errorMsg += `❌ ${key}.${nestedKey}: ${errorData[key][nestedKey]}\n`;
+                                        errorMsg += `  ${key}.${nestedKey}: ${errorData[key][nestedKey]}\n`;
                                     }
                                 });
                             } else if (Array.isArray(errorData[key])) {
-                                errorMsg += `❌ ${key}: ${errorData[key].join(', ')}\n`;
+                                errorMsg += `  ${key}: ${errorData[key].join(', ')}\n`;
                             } else if (errorData[key]) {
-                                errorMsg += `❌ ${key}: ${errorData[key]}\n`;
+                                errorMsg += `  ${key}: ${errorData[key]}\n`;
                             }
                         });
                     }
